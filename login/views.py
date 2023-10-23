@@ -8,3 +8,10 @@ class LoginListView(View):
             
         }
         return render(request, 'Login.html', context)
+    
+class LoginHomeView(View):
+    def get(self, request, *args, **kwargs):
+        context = {
+            
+        }
+        return render(request, 'Home.html', context)
