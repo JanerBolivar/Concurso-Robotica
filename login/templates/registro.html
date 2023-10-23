@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<form method="post" action="{% url 'login:registro' %}">
+  {% csrf_token %}
+  <div class="p-4">
+    <div class="row p-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Primer nombre">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Segundo nombre">
+      </div>
+    </div>
+    <div class="row p-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Primer apellido">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Segundo apellido">
+      </div>
+    </div>
+    <div class="row p-3">
+      <div class="form-group col-md-6">
+        <select id="inputState" class="form-control">
+          <option selected>Sexo...</option>
+          <option>Femenino</option>
+          <option>Maculino</option>
+          <option>Prefiero no decirlo</option>
+        </select>
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Numero de celular">
+      </div>
+    </div>
+    <div class="row p-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Correo">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Contraseña">
+      </div>
+    </div>
+    <div class="row p-3">
+      <div class="col">
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
