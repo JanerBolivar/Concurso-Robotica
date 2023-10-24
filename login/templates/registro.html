@@ -6,23 +6,32 @@
   <div class="p-4">
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer nombre">
+        <div class="d-flex justify-content-center">
+          <h2>Registro</h2>
+        </div>
+        <small id="registroHelp" class="form-text text-muted">Es rápido y fácil.</small>
+      </div>
+    </div>
+
+    <div class="row p-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Primer nombre" name="nombre1">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo nombre">
+        <input type="text" class="form-control" placeholder="Segundo nombre" name="nombre2">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer apellido">
+        <input type="text" class="form-control" placeholder="Primer apellido" name="apellido1">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo apellido">
+        <input type="text" class="form-control" placeholder="Segundo apellido" name="apellido2">
       </div>
     </div>
     <div class="row p-3">
       <div class="form-group col-md-6">
-        <select id="inputState" class="form-control">
+        <select id="inputState" class="form-control" name="sexo">
           <option selected>Sexo...</option>
           <option>Femenino</option>
           <option>Maculino</option>
@@ -30,15 +39,15 @@
         </select>
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Numero de celular">
+        <input type="text" class="form-control" placeholder="Numero de celular" name="telefono">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Correo">
+        <input type="text" class="form-control is-invalid" placeholder="Correo" name="correo" data-toggle="tooltip" data-placement="top" title="Este correo ya existe">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Contraseña">
+        <input type="text" class="form-control" placeholder="Contraseña" name="contrasena">
       </div>
     </div>
     <div class="row p-3">
@@ -46,6 +55,12 @@
         <div class="d-flex justify-content-center">
           <button type="submit" class="btn btn-primary">Registrar</button>
         </div>
+      </div>
+    </div>
+    <div class="row p-3 justify-content-center">
+      <div class="d-flex">
+        <a class="dropdown-item" href="{% url 'login' %}">Iniciar sesión</a>
+        <a class="dropdown-item" href="#">Recuperar contraseña</a>
       </div>
     </div>
   </div>
