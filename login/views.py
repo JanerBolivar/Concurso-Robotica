@@ -21,7 +21,7 @@ def existe_cuenta(correo):
 class RegistroView(View):
     def get(self, request, *args, **kwargs):
         context = {
-            
+            'correo_error': False,
         }
         return render(request, 'registro.html', context)
     
@@ -32,14 +32,24 @@ class RegistroView(View):
         apellido1 = request.POST['apellido1']
         apellido2 = request.POST['apellido2']
         #fecha_nacimiento = request.POST['fecha_nacimiento']
+        telefono = request.POST['telefono']
         sexo = request.POST['sexo']
         correo = request.POST['correo']
         contrasena = request.POST['contrasena']
 
         # Validar si la cuenta ya existe
         if existe_cuenta(correo):
+            usuario_existente = Usuario.objects.get(correo=correo)  # Recupera el usuario existente
             context = {
-                'error': 'La cuenta ya existe.',
+                'correo_error': True,
+                'nombre1': nombre1,
+                'nombre2': nombre2,
+                'apellido1': apellido1,
+                'apellido2': apellido2,
+                'telefono': telefono,
+                'sexo': sexo,
+                'correo': correo,
+                'contrasena': contrasena,
             }
             return render(request, 'registro.html', context)
         
@@ -50,13 +60,14 @@ class RegistroView(View):
             Apellido1=apellido1,
             Apellido2=apellido2,
             #fecha_nacimiento=fecha_nacimiento,
+            telefono=telefono,
             sexo=sexo,
             correo=correo,
             contrasena=contrasena,
         )
 
         # Iniciar sesión al nuevo usuario
-        #login(request, usuario)
+        # login(request, usuario)
 
         # Redireccionar a la página de inicio
         return redirect('home')

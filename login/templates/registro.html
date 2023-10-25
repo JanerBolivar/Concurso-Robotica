@@ -15,18 +15,18 @@
 
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer nombre" name="nombre1">
+        <input type="text" class="form-control" placeholder="Primer nombre" name="nombre1" value="{{ nombre1|default:'' }}">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo nombre" name="nombre2">
+        <input type="text" class="form-control" placeholder="Segundo nombre" name="nombre2" value="{{ nombre2|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer apellido" name="apellido1">
+        <input type="text" class="form-control" placeholder="Primer apellido" name="apellido1" value="{{ apellido1|default:'' }}">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo apellido" name="apellido2">
+        <input type="text" class="form-control" placeholder="Segundo apellido" name="apellido2" value="{{ apellido2|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
@@ -39,12 +39,12 @@
         </select>
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Numero de celular" name="telefono">
+        <input type="text" class="form-control" placeholder="Numero de celular" name="telefono" value="{{ telefono|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control is-invalid" placeholder="Correo" name="correo" data-toggle="tooltip" data-placement="top" title="Este correo ya existe">
+        <input type="text" class="form-control {% if correo_error %}is-invalid{% endif %}" placeholder="Correo" name="correo" data-toggle="tooltip" data-placement="top" title="{% if correo_error %}Este correo ya existe{% endif %}" value="{{ correo|default:'' }}">
       </div>
       <div class="col">
         <input type="text" class="form-control" placeholder="Contraseña" name="contrasena">
