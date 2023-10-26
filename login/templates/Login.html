@@ -1,33 +1,46 @@
 {% extends 'layout.html' %}
 
-{% block content %}
-  <form>
-    <div class="form-group">
-      <label for="exampleInputEmail1">Email address</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-      <small id="emailHelp" class="form-text text-muted">Nunca compartiremos su correo electrónico con nadie más.</small>
-    </div>
-    <div class="form-group">
-      <label for="exampleInputPassword1">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1" />
-    </div>
-    <div class="form-group form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-      <label class="form-check-label" for="exampleCheck1">Mostrar Contraseña</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-  </form>
+{% load static %}
 
-  <script>
-    const checkbox = document.getElementById('exampleCheck1')
-    const passwordInput = document.getElementById('exampleInputPassword1')
-    
-    checkbox.addEventListener('change', function () {
-      if (this.checked) {
-        passwordInput.type = 'text'
-      } else {
-        passwordInput.type = 'password'
-      }
-    })
-  </script>
+{% block content %}
+<form method="post" action="{% url 'login:prueba' %}">
+  {% csrf_token %}
+
+  <div class="row p-3">
+    <div class="col">
+      <div class="d-flex justify-content-center">
+        <h2>Iniciar sesión</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="id_username">Email address</label>
+    <input type="text" class="form-control {% if campos_vacios_error.correo %}is-invalid{% endif %}" id="id_username"
+      name="correo" aria-describedby="emailHelp" data-toggle="tooltip" data-placement="top"
+      title="{% if campos_vacios_error.correo %}Este campo es obligatorio{% endif %}" value="{{ correo|default:'' }}" />
+    <small id="emailHelp" class="form-text text-muted">Nunca compartiremos su correo electrónico con nadie más.</small>
+  </div>
+  <div class="form-group">
+    <label for="id_password">Password</label>
+    <div class="input-group">
+      <input type="password" class="form-control {% if campos_vacios_error.contrasena %}is-invalid{% endif %}"
+        id="contrasenaInput" name="contrasena" data-toggle="tooltip" data-placement="top"
+        title="{% if campos_vacios_error.contrasena %}Este campo es obligatorio{% endif %}" />
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="button" id="toggleContrasenaBtn"
+          onclick="toggleContrasena()">Mostrar</button>
+      </div>
+    </div>
+    <script src="{% static 'js/mostrar_contrasena.js' %}"></script>
+  </div>
+  <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+  <div class="row p-3 justify-content-center">
+    <div class="d-flex">
+      <a class="dropdown-item" href="{% url 'login:registro' %}">Crear cuenta</a>
+      <a class="dropdown-item" href="#">Recuperar contraseña</a>
+    </div>
+  </div>
+</form>
+
 {% endblock %}

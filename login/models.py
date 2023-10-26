@@ -22,5 +22,16 @@ class Usuario(models.Model):
         ],
     )
 
+    def verificar_login(self, correo, contrasena):
+        try:
+            usuario = Usuario.objects.get(correo=correo)  # Buscar un usuario con el correo proporcionado
+            if usuario.contrasena == contrasena:
+                # La contraseña es correcta, retorna la información del usuario
+                return usuario
+            else:
+                return "Contraseña incorrecta"
+        except Usuario.DoesNotExist:
+            return "Cuenta no existe"
+
     def __str__(self) -> str:
         return f'{self.Nombre1} {self.Apellido1}'
