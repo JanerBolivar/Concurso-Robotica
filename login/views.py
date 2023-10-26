@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from .models import Usuario
 
     
@@ -12,6 +10,43 @@ class LoginHomeView(View):
             
         }
         return render(request, 'Home.html', context)
+
+
+class pruebaView(View):
+    def get(self, request, *args, **kwargs):
+        context = {
+            
+        }
+        return render(request, 'Login.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        correo = request.POST.get('correo', '')
+        contrasena = request.POST.get('contrasena', '')
+
+        # Validar campos vacíos y guardar mensajes de error
+        campos_vacios_error = {}
+        if not correo:
+            campos_vacios_error['correo'] = 'Este campo es obligatorio.'
+        if not contrasena:
+            campos_vacios_error['contrasena'] = 'Este campo es obligatorio.'
+        
+        if campos_vacios_error:
+            context = {
+                'campos_vacios_error': campos_vacios_error,
+                'correo': correo,
+                'contrasena': contrasena,
+            }
+            return render(request, 'Login.html', context)
+
+        usuario = Usuario().verificar_login(correo, contrasena)
+
+        if isinstance(usuario, Usuario):
+            return render(request, 'Home.html', {'usuario': usuario})
+            #return redirect('login:principal')
+        else:
+            mensaje_error = usuario  # Puede ser "Contraseña incorrecta" o "Cuenta no existe"
+            return render(request, 'registro.html', {'error_message': mensaje_error})
+
 
 # Método para validar si la cuenta ya existe
 def existe_cuenta(correo):
@@ -122,12 +157,11 @@ class RegistroView(View):
             contrasena=contrasena,
         )
 
-        # Iniciar sesión al nuevo usuario
-        # login(request, usuario)
+        usuario = Usuario().verificar_login(correo, contrasena)
 
-        # Redireccionar a la página de inicio
-        return redirect('home')
-
-def exit(request):
-    logout(request)
-    return redirect('home')
+        if isinstance(usuario, Usuario):
+            return render(request, 'Home.html', {'usuario': usuario})
+            #return redirect('login:principal')
+        else:
+            mensaje_error = usuario  # Puede ser "Contraseña incorrecta" o "Cuenta no existe"
+            return render(request, 'registro.html', {'error_message': mensaje_error})
