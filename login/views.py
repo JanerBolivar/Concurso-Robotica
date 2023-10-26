@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .models import Usuario
@@ -26,16 +27,71 @@ class RegistroView(View):
         return render(request, 'registro.html', context)
     
     def post(self, request, *args, **kwargs):
-        # Obtener los datos del formulario
-        nombre1 = request.POST['nombre1']
-        nombre2 = request.POST['nombre2']
-        apellido1 = request.POST['apellido1']
-        apellido2 = request.POST['apellido2']
-        #fecha_nacimiento = request.POST['fecha_nacimiento']
-        telefono = request.POST['telefono']
-        sexo = request.POST['sexo']
-        correo = request.POST['correo']
-        contrasena = request.POST['contrasena']
+         # Obtener los datos del formulario
+        nombre1 = request.POST.get('nombre1', '')
+        nombre2 = request.POST.get('nombre2', '')
+        apellido1 = request.POST.get('apellido1', '')
+        apellido2 = request.POST.get('apellido2', '')
+        telefono = request.POST.get('telefono', '')
+        fecha_nacimiento = request.POST.get('fecha_nacimiento', '')
+        sexo = request.POST.get('sexo', '')
+        correo = request.POST.get('correo', '')
+        contrasena = request.POST.get('contrasena', '')
+        contrasena_repetida = request.POST.get('contrasena_repetida', '')
+
+        # Validar campos vacíos y guardar mensajes de error
+        campos_vacios_error = {}
+        if not nombre1:
+            campos_vacios_error['nombre1'] = 'Este campo es obligatorio.'
+        if not apellido1:
+            campos_vacios_error['apellido1'] = 'Este campo es obligatorio.'
+        if not apellido2:
+            campos_vacios_error['apellido2'] = 'Este campo es obligatorio.'
+        if not telefono:
+            campos_vacios_error['telefono'] = 'Este campo es obligatorio.'
+        if sexo == 'Sexo...':
+            campos_vacios_error['sexo'] = 'Este campo es obligatorio.'
+        if not correo:
+            campos_vacios_error['correo'] = 'Este campo es obligatorio.'
+        if not contrasena:
+            campos_vacios_error['contrasena'] = 'Este campo es obligatorio.'
+        if not contrasena_repetida:
+            campos_vacios_error['contrasena_repetida'] = 'Este campo es obligatorio.'
+
+        if campos_vacios_error:
+            context = {
+                'correo_error': False,
+                'campos_vacios_error': campos_vacios_error,
+                'nombre1': nombre1,
+                'nombre2': nombre2,
+                'apellido1': apellido1,
+                'apellido2': apellido2,
+                'telefono': telefono,
+                'sexo': sexo,
+                'correo': correo,
+                'contrasena': contrasena,
+                'contrasena_repetida': contrasena_repetida,
+            }
+            return render(request, 'registro.html', context)
+        
+
+        if contrasena != contrasena_repetida:
+            context = {
+                'correo_error': False,
+                'campos_vacios_error': campos_vacios_error,
+                'contrasena_no_coincide': True,
+                'nombre1': nombre1,
+                'nombre2': nombre2,
+                'apellido1': apellido1,
+                'apellido2': apellido2,
+                'telefono': telefono,
+                'sexo': sexo,
+                'correo': correo,
+                'contrasena': contrasena,
+                'contrasena_repetida': contrasena_repetida,
+            }
+            return render(request, 'registro.html', context)
+
 
         # Validar si la cuenta ya existe
         if existe_cuenta(correo):
@@ -59,7 +115,7 @@ class RegistroView(View):
             Nombre2=nombre2,
             Apellido1=apellido1,
             Apellido2=apellido2,
-            #fecha_nacimiento=fecha_nacimiento,
+            fecha_nacimiento=fecha_nacimiento,
             telefono=telefono,
             sexo=sexo,
             correo=correo,
