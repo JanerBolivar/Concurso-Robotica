@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
 
+{% load static %}
+
 {% block content %}
 <form method="post" action="{% url 'login:registro' %}">
   {% csrf_token %}
@@ -15,23 +17,35 @@
 
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer nombre" name="nombre1" value="{{ nombre1|default:'' }}">
+        <input type="text" class="form-control {% if campos_vacios_error.nombre1 %}is-invalid{% endif %}"
+          placeholder="Primer nombre" name="nombre1" data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.nombre1 %}Este campo es obligatorio{% endif %}"
+          value="{{ nombre1|default:'' }}">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo nombre" name="nombre2" value="{{ nombre2|default:'' }}">
+        <input type="text" class="form-control" placeholder="Segundo nombre" name="nombre2"
+          value="{{ nombre2|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control" placeholder="Primer apellido" name="apellido1" value="{{ apellido1|default:'' }}">
+        <input type="text" class="form-control {% if campos_vacios_error.apellido1 %}is-invalid{% endif %}"
+          placeholder="Primer apellido" name="apellido1" data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.apellido1 %}Este campo es obligatorio{% endif %}"
+          value="{{ apellido1|default:'' }}">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Segundo apellido" name="apellido2" value="{{ apellido2|default:'' }}">
+        <input type="text" class="form-control {% if campos_vacios_error.apellido2 %}is-invalid{% endif %}"
+          placeholder="Segundo apellido" name="apellido2" data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.apellido2 %}Este campo es obligatorio{% endif %}"
+          value="{{ apellido2|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
       <div class="form-group col-md-6">
-        <select id="inputState" class="form-control" name="sexo">
+        <select id="inputState" class="form-control {% if campos_vacios_error.sexo %}is-invalid{% endif %}" name="sexo"
+          data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.sexo %}Este campo es obligatorio{% endif %}">
           <option selected>Sexo...</option>
           <option>Femenino</option>
           <option>Maculino</option>
@@ -39,16 +53,50 @@
         </select>
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Numero de celular" name="telefono" value="{{ telefono|default:'' }}">
+        <input type="text" class="form-control {% if campos_vacios_error.telefono %}is-invalid{% endif %}"
+          placeholder="Numero de celular" name="telefono" data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.telefono %}Este campo es obligatorio{% endif %}"
+          value="{{ telefono|default:'' }}">
       </div>
     </div>
     <div class="row p-3">
       <div class="col">
-        <input type="text" class="form-control {% if correo_error %}is-invalid{% endif %}" placeholder="Correo" name="correo" data-toggle="tooltip" data-placement="top" title="{% if correo_error %}Este correo ya existe{% endif %}" value="{{ correo|default:'' }}">
+        <input type="text"
+          class="form-control {% if campos_vacios_error.correo %}is-invalid{% endif %} {% if correo_error %}is-invalid{% endif %}"
+          placeholder="Correo" name="correo" data-toggle="tooltip" data-placement="top"
+          title="{% if campos_vacios_error.correo %}Este campo es obligatorio{% endif %} {% if correo_error %}Este correo ya existe{% endif %}"
+          value="{{ correo|default:'' }}">
       </div>
       <div class="col">
-        <input type="text" class="form-control" placeholder="Contraseña" name="contrasena">
+        <div class="input-group">
+          <input type="password" class="form-control {% if campos_vacios_error.contrasena %}is-invalid{% endif %} {% if contrasena_no_coincide %}is-invalid{% endif %}"
+            placeholder="Contraseña" name="contrasena" id="contrasenaInput" data-toggle="tooltip" data-placement="top"
+            title="{% if campos_vacios_error.contrasena %}Este campo es obligatorio{% endif %} {% if contrasena_no_coincide %}La contraseña no coincide{% endif %}">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="toggleContrasenaBtn"
+              onclick="toggleContrasena()">Mostrar</button>
+          </div>
+        </div>
       </div>
+      <script src="{% static 'js/mostrar_contrasena.js' %}"></script>
+    </div>
+    <div class="row p-3">
+      <div class="col">
+        <input type="date" class="form-control" name="fecha_nacimiento" id="fecha_nacimiento" data-toggle="tooltip"
+          data-placement="top" title="Fecha de Nacimiento" value="{{ fecha_nacimiento|default:'' }}">
+      </div>
+      <div class="col">
+        <div class="input-group">
+          <input type="password" class="form-control {% if campos_vacios_error.contrasena_repetida %}is-invalid{% endif %} {% if contrasena_no_coincide %}is-invalid{% endif %}"
+            placeholder="Repetir contraseña" name="contrasena_repetida" id="contrasenaInput" data-toggle="tooltip"
+            data-placement="top" title="{% if campos_vacios_error.contrasena_repetida %}Este campo es obligatorio{% endif %} {% if contrasena_no_coincide %}La contraseña no coincide{% endif %}">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="toggleContrasenaBtn"
+              onclick="toggleContrasena()">Mostrar</button>
+          </div>
+        </div>
+      </div>
+      <script src="{% static 'js/mostrar_contrasena.js' %}"></script>
     </div>
     <div class="row p-3">
       <div class="col">
