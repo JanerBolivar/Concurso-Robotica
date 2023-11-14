@@ -9,5 +9,6 @@ urlpatterns = [
     path('', HomeView.as_view(), name="home"),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', include('login.urls', namespace='login')),
+    path('competencia/', include('competencia.urls', namespace='competencia')),
     path('jurado/', include('jurado.urls', namespace='jurado')),
 ]
