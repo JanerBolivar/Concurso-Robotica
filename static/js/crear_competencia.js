@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Establecer manualmente los valores del formulario en blanco
         document.getElementById('nombreCategoria').value = '';
         document.getElementById('descripcionCategoria').value = '';
-        document.getElementById('valorCategoria').value = '';
         document.getElementById('reglasCategoria').innerHTML = ''; // Limpiar las reglas al abrir la ventana modal
+        document.getElementById('areasEvaluacionContainer').innerHTML = ''; // Limpiar las reglas al abrir la ventana modal
 
         $('#modalCategoria').modal('show'); // Mostrar la ventana modal al agregar categoría
     });
@@ -21,16 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('guardarCategoriaBtn').addEventListener('click', function () {
         var nombreCategoria = document.getElementById('nombreCategoria').value;
         var descripcionCategoria = document.getElementById('descripcionCategoria').value;
-        var valorCategoria = document.getElementById('valorCategoria').value;
 
-        if (nombreCategoria && descripcionCategoria && valorCategoria) {
+        if (nombreCategoria && descripcionCategoria) {
             var reglas = obtenerReglas(); // Obtener las reglas ingresadas
+            var areasEvaluacion = obtenerAreasEvaluacion(); // Obtener las areas de evaluacion ingresadas
 
             categorias.push({
                 nombre: nombreCategoria,
                 descripcion: descripcionCategoria,
-                valor: valorCategoria,
-                reglas: reglas
+                reglas: reglas,
+                areasEvaluacion: areasEvaluacion
             });
 
             actualizarTarjetasCategorias();
@@ -60,6 +60,28 @@ document.addEventListener('DOMContentLoaded', function () {
         return reglas;
     }
 
+    function obtenerAreasEvaluacion() {
+        var areasEvaluacion = [];
+        var inputsAreas = document.querySelectorAll('.areaInput');
+
+        inputsAreas.forEach(function (input) {
+            var nombreArea = input.querySelector('.nombreArea').value;
+            var descripcionArea = input.querySelector('.descripcionArea').value;
+            var porcentajeArea = input.querySelector('.porcentajeArea').value;
+
+            if (nombreArea && descripcionArea && porcentajeArea) {
+                areasEvaluacion.push({
+                    nombre: nombreArea,
+                    descripcion: descripcionArea,
+                    porcentaje: porcentajeArea
+                });
+            }
+        });
+
+        return areasEvaluacion;
+    }
+
+    //Crear reglas
     document.getElementById('agregarReglaBtn').addEventListener('click', function () {
         // Crear dinámicamente los elementos de entrada para una nueva regla
         var divRegla = document.createElement('div');
@@ -76,9 +98,47 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('reglasCategoria').appendChild(divRegla);
     });
 
+    //Crear Area de evaluacion
+    document.getElementById('agregarAreaBtn').addEventListener('click', function () {
+        // Crear dinámicamente los elementos de entrada para una nueva área de evaluación
+        var divArea = document.createElement('div');
+        divArea.className = 'form-group areaInput';
+
+        divArea.innerHTML = `
+          <label for="nombreArea">Nombre del Área</label>
+          <input type="text" class="form-control nombreArea" required />
+          <label for="descripcionArea">Descripción del Área</label>
+          <textarea class="form-control descripcionArea" rows="2" required></textarea>
+          <label for="porcentajeArea">Porcentaje</label>
+          <input type="number" class="form-control porcentajeArea" required />
+          <hr/>
+        `;
+
+        document.getElementById('areasEvaluacionContainer').appendChild(divArea);
+    });
+
+    function mostrarInformacionCategoriaModal(categoria) {
+        document.getElementById('modalInformacionCategoriaLabel').textContent = categoria.nombre;
+        document.getElementById('modalCategoriaDescripcion').textContent = categoria.descripcion;
+
+        var reglasHTML = '';
+        categoria.reglas.forEach(function (regla) {
+            reglasHTML += `<li>${regla.nombre}: ${regla.descripcion}</li>`;
+        });
+        document.getElementById('modalCategoriaReglas').innerHTML = reglasHTML;
+
+        var areasEvaluacionHTML = '';
+        categoria.areasEvaluacion.forEach(function (area) {
+            areasEvaluacionHTML += `<li>${area.nombre}: ${area.descripcion} - Porcentaje: ${area.porcentaje}%</li>`;
+            document.getElementById('modalCategoriaAreasEvaluacion').innerHTML = areasEvaluacionHTML;
+        });
+        document.getElementById('modalCategoriaAreasEvaluacion').innerHTML = areasEvaluacionHTML;
+
+        $('#modalInformacionCategoria').modal('show');
+    }
+
     function actualizarTarjetasCategorias() {
         var categoriasContainer = document.getElementById('categoriasContainer');
-
         categoriasContainer.innerHTML = '';
 
         categorias.forEach(function (categoria, index) {
@@ -88,31 +148,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" id="nombre_categoria_card_${index}">${categoria.nombre}</h5>
-                        <p class="card-text" id="descripcion_categoria_card_${index}">${categoria.descripcion} - Valor: ${categoria.valor}</p>
-                        <button class="btn btn-primary" onclick="mostrarInformacionCategoria(${index})">Saber más</button>
+                        <p class="card-text" id="descripcion_categoria_card_${index}">${categoria.descripcion}</p>
+                        <button class="btn btn-primary mostrar-info" type="button" data-index="${index}">Saber más</button>
                     </div>
                 </div>
             `;
             categoriasContainer.appendChild(nuevaTarjeta);
         });
+
+        // Añadir evento click a los botones "Saber más"
+        var botonesSaberMas = document.querySelectorAll('.mostrar-info');
+        botonesSaberMas.forEach(function (boton) {
+            boton.addEventListener('click', function (event) {
+                var index = event.target.getAttribute('data-index');
+                var categoria = categorias[index];
+                mostrarInformacionCategoriaModal(categoria);
+            });
+        });
     }
 
-    // Función para mostrar la información completa de una categoría, incluyendo todas las reglas
-    window.mostrarInformacionCategoria = function (index) {
-        var categoria = categorias[index];
 
-        var informacionCategoria = `
-            <h4>${categoria.nombre}</h4>
-            <p>${categoria.descripcion} - Valor: ${categoria.valor}</p>
-            <h5>Reglas:</h5>
-        `;
 
-        categoria.reglas.forEach(function (regla) {
-            informacionCategoria += `<p>${regla.nombre}: ${regla.descripcion}</p>`;
-        });
-
-        // Crear una ventana emergente para mostrar la información
-        var ventanaEmergente = window.open('', 'InformacionCategoria', 'width=600,height=400,scrollbars=yes,resizable=yes');
-        ventanaEmergente.document.body.innerHTML = informacionCategoria;
-    };
+    // Resto de tu código...
 });
