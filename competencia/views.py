@@ -8,3 +8,6 @@ class CrearCompetenciaView(View):
             
         }
         return render(request, 'crearCompetencia.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        print("Entro")
