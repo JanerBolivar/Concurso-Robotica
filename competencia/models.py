@@ -16,7 +16,7 @@ class Competencia(models.Model):
     banner3 = models.BinaryField(null=True, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.NombreCompetencia} {self.EstadoCompetencia}'
+        return f'{self.id} {self.NombreCompetencia} {self.EstadoCompetencia}'
 
 
 class Categoria(models.Model):
@@ -26,7 +26,7 @@ class Categoria(models.Model):
     competencia = models.ForeignKey('Competencia', on_delete=models.CASCADE, related_name='Categoria')
 
     def __str__(self) -> str:
-        return f'{self.NombreCategoria} {self.EstadoCategoria}'
+        return f'{self.id} {self.NombreCategoria} {self.EstadoCategoria}'
 
 
 class AreaEvaluacion(models.Model):
@@ -37,7 +37,7 @@ class AreaEvaluacion(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='AreaEvaluacion')
 
     def __str__(self) -> str:
-        return f'{self.NombreAreaEvaluacion} {self.EstadoAreaEvaluacion}'
+        return f'{self.id} {self.NombreAreaEvaluacion} {self.EstadoAreaEvaluacion}'
 
 
 class Regla(models.Model):
@@ -47,4 +47,4 @@ class Regla(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='Regla')
 
     def __str__(self) -> str:
-        return f'{self.NombreRegla} {self.EstadoRegla}'
+        return f'{self.id} {self.NombreRegla} {self.EstadoRegla}'

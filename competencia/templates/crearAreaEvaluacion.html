@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Crear área de evaluacion | Concurso de robótica
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+  <div class="container p-4">
+    <form id="crearCompetenciaForm" method="post" action="{% url 'competencia:crear_area_evaluacion' competencia_id=competencia_id categoria_id=categoria_id %}">
+      {% csrf_token %}
+      <div class="row p-3">
+        <div class="col">
+          <div class="d-flex justify-content-center">
+            <h2>Crear Área de Evaluación</h2>
+          </div>
+          <small id="registroHelp" class="form-text text-muted">Es rápido y fácil.</small>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col">
+          <div class="form-group">
+            <label for="nombre_regla">Nombre del áre de evaluación</label>
+            <input type="text" class="form-control" id="nombre_area_evaluacion" name="nombre_area_evaluacion" />
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="row p-3">
+        <div class="col">
+          <div class="form-group">
+            <label for="descripcion_regla">Descripción</label>
+            <textarea class="form-control" id="descripcion_area_evaluacion" rows="4" name="descripcion_area_evaluacion"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row p-3">
+        <div class="col">
+          <div class="form-group">
+            <label for="porcentajeArea">Porcentaje</label>
+            <input type="number" class="form-control porcentajeArea" required name="porcentaje_area_evaluacion"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="row p-3">
+        <div class="col">
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary" id="crearReglaBtn">Crear Área de Evaluación</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}
