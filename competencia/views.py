@@ -50,7 +50,7 @@ class PruebaCompetenciaView(View):
         nueva_competencia = Competencia.objects.latest('id')  # Obtener la última competencia creada
         competencia_id = nueva_competencia.id
 
-        return redirect(reverse('competencia:crear_categoria', kwargs={'competencia_id': competencia_id}))
+        return redirect(reverse('competencia:agregar_categorias', kwargs={'competencia_id': competencia_id}))
 
 
 class crearCategoriaView(View):
@@ -86,6 +86,29 @@ class crearCategoriaView(View):
         return redirect(reverse('competencia:crear_RA_categoria', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
 
 
+class agregar_CategoriaView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        context = {
+            'competencia_id': competencia_id,
+            'nombre_competencia': competencia.NombreCompetencia,
+            'descripcion_competencia': competencia.DescipcionCompetencia,
+            'categorias': categorias,
+        }
+        return render(request, 'agregar_Categorias.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        print("Post de prueba")
+
+
+
+
+
 class crear_RA_CategoriaView(View):
     def get(self, request, *args, **kwargs):
         competencia_id = self.kwargs.get('competencia_id')
@@ -93,11 +116,16 @@ class crear_RA_CategoriaView(View):
 
         categoria = get_object_or_404(Categoria, id=categoria_id)
 
+        reglas = Regla.objects.filter(categoria=categoria)
+        areas = AreaEvaluacion.objects.filter(categoria=categoria)
+
         context = {
             'competencia_id': competencia_id,
             'categoria_id': categoria_id,
             'nombre_categoria': categoria.NombreCategoria,
             'descripcion_categoria': categoria.DescipcionCategoria,
+            'reglas': reglas,
+            'areas': areas,
         }
         return render(request, 'crear_RA_Categoria.html', context)
     
@@ -171,4 +199,32 @@ class crearAreaEvaluacionView(View):
 
 
         return redirect(reverse('competencia:crear_RA_categoria', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
+
+
+
+class Mostrar_InformacionView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        # Obtener las reglas y áreas de evaluación para cada categoría
+        for categoria in categorias:
+            categoria.reglas = Regla.objects.filter(categoria=categoria)
+            categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+
+
+        context = {
+            'competencia_id': competencia_id,
+            'competencia': competencia,
+            'nombre_competencia': competencia.NombreCompetencia,
+            'descripcion_competencia': competencia.DescipcionCompetencia,
+            'categorias': categorias,
+        }
+        return render(request, 'Mostrar_Informacion.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        print("Post de prueba")
 
