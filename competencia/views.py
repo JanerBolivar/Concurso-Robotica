@@ -3,6 +3,9 @@ from django.views.generic import View
 from .models import Competencia, Categoria, AreaEvaluacion, Regla
 from django.urls import reverse
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 # Create your views here.
 class CrearCompetenciaView(View):
     def get(self, request, *args, **kwargs):
@@ -41,10 +44,23 @@ class PruebaCompetenciaView(View):
         )
         nueva_competencia.save()
         
-        # Guardar banners en la instancia de Competencia
-        nueva_competencia.banner1 = request.FILES.get('inputGroupFile01')
-        nueva_competencia.banner2 = request.FILES.get('inputGroupFile02')
-        nueva_competencia.banner3 = request.FILES.get('inputGroupFile03')
+        # Guardar archivos temporalmente y luego leer su contenido binario
+        banner1 = request.FILES.get('inputGroupFile01')
+        if banner1:
+            file_path = default_storage.save('temp/' + banner1.name, ContentFile(banner1.read()))
+            nueva_competencia.banner1 = default_storage.open(file_path).read()
+
+        banner2 = request.FILES.get('inputGroupFile02')
+        if banner2:
+            file_path = default_storage.save('temp/' + banner2.name, ContentFile(banner2.read()))
+            nueva_competencia.banner2 = default_storage.open(file_path).read()
+
+        banner3 = request.FILES.get('inputGroupFile03')
+        if banner3:
+            file_path = default_storage.save('temp/' + banner3.name, ContentFile(banner3.read()))
+            nueva_competencia.banner3 = default_storage.open(file_path).read()
+        
+
         nueva_competencia.save()
 
         nueva_competencia = Competencia.objects.latest('id')  # Obtener la última competencia creada

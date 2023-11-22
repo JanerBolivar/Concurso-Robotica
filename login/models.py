@@ -4,6 +4,15 @@ from django.db.models.fields import CharField, DateField, EmailField
 import datetime
 
 
+class TipoUsuario(models.Model):
+    NombreTipoUsuario = CharField(max_length=60)
+    DescipcionTipoUsuario = CharField(max_length=250)
+    EstadoTipoUsuario = CharField(max_length=60, default="Disponible")
+
+    def __str__(self) -> str:
+        return f'{self.id} {self.NombreTipoUsuario} {self.EstadoTipoUsuario}'
+
+
 class Usuario(models.Model):
     Nombre1 = CharField(max_length=60)
     Nombre2 = CharField(max_length=60, blank=True)
@@ -21,6 +30,7 @@ class Usuario(models.Model):
             django.core.validators.MinLengthValidator(8),
         ],
     )
+    tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.CASCADE, related_name='Usuario')
 
     def verificar_login(self, correo, contrasena):
         try:

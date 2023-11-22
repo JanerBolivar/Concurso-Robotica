@@ -1,22 +1,27 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
-from .models import Usuario
+from .models import Usuario, TipoUsuario
+import bcrypt
 
     
 class LoginHomeView(View):
     def get(self, request, *args, **kwargs):
+        usuario_id = self.kwargs.get('usuario_id')
+
+        usuario = get_object_or_404(Usuario, id=usuario_id)
+
+        print(usuario.tipo_usuario)
+
         context = {
-            
+            'usuario': usuario,
         }
         return render(request, 'Home.html', context)
 
 
 class pruebaView(View):
     def get(self, request, *args, **kwargs):
-        context = {
-            
-        }
+        context = {}
         return render(request, 'Login.html', context)
     
     def post(self, request, *args, **kwargs):
@@ -38,14 +43,23 @@ class pruebaView(View):
             }
             return render(request, 'Login.html', context)
 
-        usuario = Usuario().verificar_login(correo, contrasena)
+        # Obtener el usuario por su correo electrónico
+        usuario = Usuario.objects.filter(correo=correo).first()
 
-        if isinstance(usuario, Usuario):
-            return render(request, 'Home.html', {'usuario': usuario})
-            #return redirect('login:principal')
-        else:
-            mensaje_error = usuario  # Puede ser "Contraseña incorrecta" o "Cuenta no existe"
-            return render(request, 'registro.html', {'error_message': mensaje_error})
+        if usuario:
+            # Verificar la contraseña
+            hashed_password = usuario.contrasena.encode('utf-8')
+            if bcrypt.checkpw(contrasena.encode('utf-8'), hashed_password):
+                # Contraseña correcta, iniciar sesión y redirigir al home
+                context = {
+                    'usuario': usuario,
+                }
+                return render(request, 'Home.html', {'usuario': usuario})
+
+        # Mensaje de error si las credenciales son incorrectas
+        mensaje_error = "Credenciales incorrectas. Inténtalo de nuevo."
+        return render(request, 'Login.html', {'error_message': mensaje_error})
+
 
 
 # Método para validar si la cuenta ya existe
@@ -144,6 +158,12 @@ class RegistroView(View):
             }
             return render(request, 'registro.html', context)
         
+
+        # Crear el nuevo usuario con contraseña encriptada
+        hashed_password = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
+
+        tipo_usuario = get_object_or_404(TipoUsuario, id=1)
+
         # Crear el nuevo usuario
         usuario = Usuario.objects.create(
             Nombre1=nombre1,
@@ -154,14 +174,21 @@ class RegistroView(View):
             telefono=telefono,
             sexo=sexo,
             correo=correo,
-            contrasena=contrasena,
+            contrasena=hashed_password.decode('utf-8'),
+            tipo_usuario=tipo_usuario,
         )
 
-        usuario = Usuario().verificar_login(correo, contrasena)
+        nueva_usuario = Usuario.objects.latest('id')
+        usuario_id = nueva_usuario.id
 
-        if isinstance(usuario, Usuario):
-            return render(request, 'Home.html', {'usuario': usuario})
-            #return redirect('login:principal')
-        else:
-            mensaje_error = usuario  # Puede ser "Contraseña incorrecta" o "Cuenta no existe"
-            return render(request, 'registro.html', {'error_message': mensaje_error})
+
+        # Obtener el usuario por su correo electrónico
+        usuario = Usuario.objects.filter(correo=correo).first()
+
+        if usuario:
+            # Verificar la contraseña
+            hashed_password = usuario.contrasena.encode('utf-8')
+            if bcrypt.checkpw(contrasena.encode('utf-8'), hashed_password):
+                # Contraseña correcta, iniciar sesión y redirigir al home
+                return render(request, 'Home.html', {'usuario': usuario})
+
