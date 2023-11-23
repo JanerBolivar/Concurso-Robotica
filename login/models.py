@@ -1,6 +1,6 @@
 import django
 from django.db import models
-from django.db.models.fields import CharField, DateField, EmailField 
+from django.db.models.fields import CharField, DateField, EmailField
 import datetime
 
 
@@ -30,18 +30,7 @@ class Usuario(models.Model):
             django.core.validators.MinLengthValidator(8),
         ],
     )
-    tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.CASCADE, related_name='Usuario')
+    tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.CASCADE, related_name='usuarios')
 
-    def verificar_login(self, correo, contrasena):
-        try:
-            usuario = Usuario.objects.get(correo=correo)  # Buscar un usuario con el correo proporcionado
-            if usuario.contrasena == contrasena:
-                # La contraseña es correcta, retorna la información del usuario
-                return usuario
-            else:
-                return "Contraseña incorrecta"
-        except Usuario.DoesNotExist:
-            return "Cuenta no existe"
-
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.Nombre1} {self.Apellido1}'

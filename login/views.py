@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
 from .models import Usuario, TipoUsuario
+from django.contrib.auth import authenticate, login
+from datetime import datetime, timedelta
 import bcrypt
 
     
@@ -43,22 +45,12 @@ class pruebaView(View):
             }
             return render(request, 'Login.html', context)
 
-        # Obtener el usuario por su correo electrónico
-        usuario = Usuario.objects.filter(correo=correo).first()
-
-        if usuario:
-            # Verificar la contraseña
-            hashed_password = usuario.contrasena.encode('utf-8')
-            if bcrypt.checkpw(contrasena.encode('utf-8'), hashed_password):
-                # Contraseña correcta, iniciar sesión y redirigir al home
-                context = {
-                    'usuario': usuario,
-                }
-                return render(request, 'Home.html', {'usuario': usuario})
-
-        # Mensaje de error si las credenciales son incorrectas
-        mensaje_error = "Credenciales incorrectas. Inténtalo de nuevo."
-        return render(request, 'Login.html', {'error_message': mensaje_error})
+        # Autenticar al usuario
+        response = HttpResponse("¡Inicio de sesión exitoso!")
+        expiration = datetime.now() + timedelta(days=7)  # Duración de la cookie (7 días)
+        response.set_cookie('sesion_iniciada', 'usuario_autenticado', expires=expiration)
+        return response
+        
 
 
 
