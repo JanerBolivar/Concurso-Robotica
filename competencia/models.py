@@ -1,7 +1,9 @@
 from django.db import models
 from django.db.models.fields import CharField, DateField
 import datetime
-from login.models import Usuario
+
+from django.forms import IntegerField
+from login.models import Usuario, Equipo
 
 # Create your models here.
 class Competencia(models.Model):
@@ -59,3 +61,29 @@ class asignacion_jurado(models.Model):
 
     def __str__(self) -> str:
         return f'{"Asignacion de Jurado: "} {self.usuario.Nombre1} {"  Área Evaluacion: "} {self.area_evaluacion.NombreAreaEvaluacion}'
+
+
+class Robot(models.Model):
+    NombreRobot = CharField(max_length=60)
+    DescripcionRobot = CharField(max_length=250)
+    imagen_robot = CharField(max_length=250, null=True)
+    diagrama_conexiones = CharField(max_length=250, null=True)
+    programacion_robot = CharField(max_length=250, null=True)
+    EstadoRobot = CharField(max_length=60, default="Activo")
+    FechaRegistro = DateField(default=datetime.date.today)
+
+    def __str__(self) -> str:
+        return f'{"Nombre: "} {self.NombreRobot}'
+
+
+class inscripcion_competencia(models.Model):
+    Estado_inscripcion = CharField(max_length=60, default="Registrado")
+    FechaInscripcion = DateField(default=datetime.date.today)
+    oportunidad1 = models.IntegerField(null=True)
+    oportunidad2 = models.IntegerField(null=True)
+    oportunidad3 = models.IntegerField(null=True)
+    color = CharField(max_length=60, default="Sin color")
+    imagen_aplicacion = CharField(max_length=250, null=True)
+    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='inscripcion_categoria')
+    equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE, related_name='inscripcion_equipo')
+    robot = models.ForeignKey('Robot', on_delete=models.CASCADE, related_name='inscripcion_robot')

@@ -7,7 +7,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 from django.http import JsonResponse
-from login.models import Usuario
+from login.models import Usuario, TipoUsuario
 
 from django.contrib import messages
 
@@ -286,20 +286,39 @@ class AsignarJurdoView(View):
 
         competencia = get_object_or_404(Competencia, id=competencia_id)
 
+        asignaciones = asignacion_jurado.objects.select_related('area_evaluacion__categoria', 'usuario').filter(area_evaluacion__categoria__competencia=competencia)
+
+        # Obtener categorías y áreas de evaluación con asignaciones
+        categorias_con_asignaciones = {}
+        for asignacion in asignaciones:
+            categoria_id = asignacion.area_evaluacion.categoria.id
+            area_evaluacion_id = asignacion.area_evaluacion.id
+
+            if categoria_id not in categorias_con_asignaciones:
+                categorias_con_asignaciones[categoria_id] = {'categoria': asignacion.area_evaluacion.categoria, 'areas_evaluacion': {}}
+
+            if area_evaluacion_id not in categorias_con_asignaciones[categoria_id]['areas_evaluacion']:
+                categorias_con_asignaciones[categoria_id]['areas_evaluacion'][area_evaluacion_id] = {
+                    'area_evaluacion': asignacion.area_evaluacion,
+                    'asignaciones': [asignacion.usuario],
+                }
+            else:
+                categorias_con_asignaciones[categoria_id]['areas_evaluacion'][area_evaluacion_id]['asignaciones'].append(asignacion.usuario)
+        
+
         categorias = Categoria.objects.filter(competencia=competencia)
 
         # Obtener las áreas de evaluación para cada categoría
         for categoria in categorias:
             categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+        
 
-            # Obtener las asignaciones de jurados para cada área de evaluación
-            for area_evaluacion in categoria.areas_evaluacion:
-                area_evaluacion.asignaciones = asignacion_jurado.objects.filter(area_evaluacion=area_evaluacion)
-
+        
         context = {
             'competencia_id': competencia_id,
             'competencia': competencia,
             'categorias': categorias,
+            'categorias_con_asignaciones': categorias_con_asignaciones,
         }
         return render(request, 'AsignarJurado.html', context)
     
@@ -324,6 +343,11 @@ class AsignarJurdoView(View):
         try:
             usuario = Usuario.objects.get(Nombre1=busqueda)  # Modifica esto según tus campos de usuario
             area_evaluacion = get_object_or_404(AreaEvaluacion, id=AreasEvaluacion_seleccionada)
+            
+            tipo_usuario = get_object_or_404(TipoUsuario, NombreTipoUsuario="Jurado")
+
+            usuario.tipo_usuario = tipo_usuario
+            usuario.save()
 
             nueva_asignacion = asignacion_jurado(
                 usuario = usuario,
@@ -336,28 +360,62 @@ class AsignarJurdoView(View):
             messages.error(request, 'El usuario no se encontró en la base de datos.')
 
         # Devuelve la página, incluyendo los datos y mensajes actualizados
-        return render(request, 'AsignarJurado.html', {
+        return redirect(reverse('competencia:asignar_jurado', kwargs={'competencia_id': competencia_id}))
+
+
+class InscripcionCompetenciaView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        context = {
             'competencia': competencia,
             'categorias': categorias,
-            # Agrega otros datos necesarios
-        })
+        }
+        return render(request, 'InscripcionCompetencia.html', context)
+    
+    def post(self, request, *args, **kwargs):
+
+        competencia_id = self.kwargs.get('competencia_id')
+        
+
+        categoria_seleccionada = request.POST.get('categoria_seleccionada')
+
+        nombre_equipo = request.POST.get('nombre_equipo')
+        color_equipo = request.POST.get('color_equipo')
+        descripcion_equipo = request.POST.get('descripcion_equipo')
+        integrante_1 = request.POST.get('integrante_1')
+        integrante_2 = request.POST.get('integrante_2')
+        integrante_3 = request.POST.get('integrante_3')
+
+        imagen_equipo = request.FILES.get('imagen_equipo')
+        video_equipo = request.FILES.get('video_equipo')
 
 
-def buscar_personas(request):
-    search_term = request.POST.get('search_term', None)
+        nombre_robot = request.POST.get('nombre_robot')
+        descripcion_robot = request.POST.get('descripcion_robot')
 
-    if search_term:
-        resultados = Usuario.objects.filter(Nombre1__icontains=search_term)
-        data = []
-        for usuario in resultados:
-            data.append({
-                'id': usuario.id,
-                'nombre': usuario.Nombre1,
-                'apellido': usuario.Apellido1,
-                'correo': usuario.correo,
-                # Otros campos que desees mostrar en los resultados
-            })
-        return JsonResponse(data, safe=False)
-    else:
-        return JsonResponse([], safe=False)
+        imagen_robot = request.FILES.get('imagen_robot')
+        diagrama_conexiones = request.FILES.get('diagrama_conexiones')
+        programacion_robot = request.FILES.get('programacion_robot')
 
+
+
+        imagen_aplicacion = request.FILES.get('imagen_aplicacion')
+
+
+        categoria = get_object_or_404(Categoria, id=categoria_seleccionada)
+
+        # Realizar la búsqueda del usuario en la base de datos
+        try:
+            print("Entro")
+            
+        except Usuario.DoesNotExist:
+            # Si no se encuentra, muestra un mensaje de error utilizando Django messages framework
+            messages.error(request, 'El se pudo completar el proceso de inscripción.')
+
+        # Devuelve la página, incluyendo los datos y mensajes actualizados
+        return redirect('/')

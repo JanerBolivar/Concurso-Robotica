@@ -154,7 +154,7 @@ class RegistroView(View):
         # Crear el nuevo usuario con contraseña encriptada
         hashed_password = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
 
-        tipo_usuario = get_object_or_404(TipoUsuario, id=1)
+        tipo_usuario = get_object_or_404(TipoUsuario, NombreTipoUsuario="Comun")
 
         # Crear el nuevo usuario
         usuario = Usuario.objects.create(

@@ -1,0 +1,220 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Inscripción a {{ competencia.NombreCompetencia }} | Concurso de robótica
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container p-4">
+    <form id="crearCompetenciaForm" method="post"
+        action="{% url 'competencia:inscripcion_competencia' competencia_id=competencia.id %}">
+        {% csrf_token %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="row p-3">
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <h2>{{ competencia.NombreCompetencia }}</h2>
+                </div>
+                <small id="registroHelp" class="form-text text-muted"></small>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <div class="form-group">
+                    <h4>Descripción</h4>
+                    <p>{{ competencia.DescipcionCompetencia }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-1">
+            <div class="col">
+                <div class="form-group">
+                    <h4>Categorías</h4>
+                    <select id="inputCategoria" class="form-control" name="categoria_seleccionada">
+                        <option selected>Seleccionar...</option>
+                        {% for categoria in categorias|dictsort:"id" %}
+                        <option value="{{ categoria.id }}">{{ categoria.NombreCategoria }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <h2>Equipo</h2>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <div class="form-group">
+                    <label for="nombre_equipo">Nombre del equipo</label>
+                    <input type="text" class="form-control" id="nombre_equipo" name="nombre_equipo" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="color_equipo">Color del equipo</label>
+                    <input type="text" class="form-control" id="color_equipo" name="color_equipo" />
+                </div>
+            </div>
+        </div>
+        <div class="row p-3">
+            <div class="col">
+                <div class="form-group">
+                    <label for="descripcion_equipo">Descripción</label>
+                    <textarea class="form-control" id="descripcion_equipo" rows="3" name="descripcion_equipo" ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <h4>Participantes</h4>
+                <small id="registroHelp" class="form-text text-muted">Ingrese los nombres de los integrantes.</small>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <div class="form-group">
+                    <label for="integrante_1">Integrante 1</label>
+                    <input type="text" class="form-control" id="integrante_1" name="integrante_1"
+                        placeholder="Ejemplo: Hector Perez Lopez" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="integrante_2">Integrante 2</label>
+                    <input type="text" class="form-control" id="integrante_2" name="integrante_2"
+                        placeholder="Ejemplo: Hector Perez Lopez" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="integrante_3">Integrante 3</label>
+                    <input type="text" class="form-control" id="integrante_3" name="integrante_3"
+                        placeholder="Ejemplo: Hector Perez Lopez" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <label for="imagen_equipo">Imagen del Equipo</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile05"
+                            aria-describedby="inputGroupFileAddon05" accept="image/*" onchange="mostrarNombreArchivo(5)"
+                            name="imagen_equipo" />
+                        <label class="custom-file-label" for="inputGroupFile05">Selecciona una imagen</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <label for="video_equipo">Video del equipo</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile06"
+                            aria-describedby="inputGroupFileAddon06" onchange="mostrarNombreArchivo(6)"
+                            name="video_equipo" />
+                        <label class="custom-file-label" for="inputGroupFile06">Selecciona un archivo</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <h2>Robot</h2>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <div class="form-group">
+                    <label for="nombre_robot">Nombre del Robot</label>
+                    <input type="text" class="form-control" id="nombre_robot" name="nombre_robot" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="descripcion_robot">Descripción del robot</label>
+                    <input type="text" class="form-control" id="descripcion_robot" name="descripcion_robot" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <label for="imagen_robot">Imagen del Robot</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile01"
+                            aria-describedby="inputGroupFileAddon01" accept="image/*" onchange="mostrarNombreArchivo(1)"
+                            name="imagen_robot" />
+                        <label class="custom-file-label" for="inputGroupFile01">Selecciona una imagen</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <label for="diagrama_conexiones">Diagrama de conexiones</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile02"
+                            aria-describedby="inputGroupFileAddon02" accept="image/*" onchange="mostrarNombreArchivo(2)"
+                            name="diagrama_conexiones" />
+                        <label class="custom-file-label" for="inputGroupFile02">Selecciona una imagen</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <label for="programacion_robot">Codigo del robot</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile03"
+                            aria-describedby="inputGroupFileAddon03" onchange="mostrarNombreArchivo(3)"
+                            name="programacion_robot" />
+                        <label class="custom-file-label" for="inputGroupFile03">Selecciona un archivo</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <label for="imagen_aplicacion">Imagen de la Aplicación</label>
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile04"
+                            aria-describedby="inputGroupFileAddon04" accept="image/*" onchange="mostrarNombreArchivo(4)"
+                            name="imagen_aplicacion" />
+                        <label class="custom-file-label" for="inputGroupFile04">Selecciona una imagen</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <!-- Actualiza el botón "Crear competencia" con un identificador único -->
+                    <button type="submit" class="btn btn-primary" id="crearReglaBtn">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="{% static 'js/mostrar_nombre.js' %}"></script>
+{% endblock %}

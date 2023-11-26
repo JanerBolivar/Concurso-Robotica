@@ -34,3 +34,25 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f'{self.Nombre1} {self.Apellido1}'
+
+
+class Equipo(models.Model):
+    NombreEquipo = CharField(max_length=60)
+    DescipcionEquipo = CharField(max_length=250)
+    imagen_equipo = CharField(max_length=250, null=True)
+    video_equipo = CharField(max_length=250, null=True)
+    EstadoEquipo = CharField(max_length=60, default="Activo")
+    fecha_registro = DateField(default=datetime.date.today)
+
+    def __str__(self):
+        return f'{self.NombreEquipo} {"Fecha registro: "} {self.fecha_registro}'
+
+
+class ParticipantesEquipos(models.Model):
+    Estado_ParticipanteEquipo = CharField(max_length=60, default="Activo")
+    fecha_ParticipanteEquipo = DateField(default=datetime.date.today)
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='ParticipantesUsuarios')
+    equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE, related_name='ParticipantesEquipos')
+
+    def __str__(self):
+        return f'{"Estado participacion: "} {self.Estado_ParticipanteEquipo}'

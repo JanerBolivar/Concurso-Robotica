@@ -80,27 +80,32 @@ Asignar Jurado | Concurso de robótica
             </div>
         </div>
 
-        {% for categoria in categorias %}
-        {% for area_evaluacion in categoria.areas_evaluacion %}
-        {% if area_evaluacion.asignaciones.all %}
-        <h4>{{ categoria.NombreCategoria }}</h4>
-        <h5>{{ area_evaluacion.NombreAreaEvaluacion }}</h5>
-        <ul>
-            {% for asignacion in area_evaluacion.asignaciones.all %}
-            <li>{{ asignacion.usuario.Nombre1 }} {{ asignacion.usuario.Apellido1 }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+        {% for categoria_id, categoria_data in categorias_con_asignaciones.items %}
+            <div class="row p-3">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            Categoría {{ categoria_data.categoria.NombreCategoria }}
+                        </div>
+                        <div class="card-body">
+                            {% for area_evaluacion_id, area_data in categoria_data.areas_evaluacion.items %}
+                                <h5 class="card-title">{{ area_data.area_evaluacion.NombreAreaEvaluacion }}</h5>
+                                {% for asignacion in area_data.asignaciones %}
+                                    <p class="card-text">{{ asignacion.Nombre1 }} {{ asignacion.Apellido1 }} {{ asignacion.correo }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-        {% endfor %}
-
-
 
         <div class="row p-3">
             <div class="col">
                 <div class="d-flex justify-content-center">
                     <!-- Actualiza el botón "Crear competencia" con un identificador único -->
-                    <a class="btn btn-primary" id="crearCompetenciaBtn" href="#">Siguiente</a>
+                    <a class="btn btn-primary" id="crearCompetenciaBtn"
+                        href="{% url 'competencia:modificar_competencia' competencia_id=competencia.id %}">Siguiente</a>
                 </div>
             </div>
         </div>
