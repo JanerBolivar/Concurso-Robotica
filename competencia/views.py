@@ -1,10 +1,15 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
-from .models import Competencia, Categoria, AreaEvaluacion, Regla
+from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado
 from django.urls import reverse
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+
+from django.http import JsonResponse
+from login.models import Usuario
+
+from django.contrib import messages
 
 # Create your views here.
 class CrearCompetenciaView(View):
@@ -243,4 +248,116 @@ class Mostrar_InformacionView(View):
     
     def post(self, request, *args, **kwargs):
         print("Post de prueba")
+
+
+
+class ModificarCompetenciaView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        # Obtener las reglas y áreas de evaluación para cada categoría
+        for categoria in categorias:
+            categoria.reglas = Regla.objects.filter(categoria=categoria)
+            categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+
+
+        context = {
+            'competencia_id': competencia_id,
+            'competencia': competencia,
+            'nombre_competencia': competencia.NombreCompetencia,
+            'descripcion_competencia': competencia.DescipcionCompetencia,
+            'categorias': categorias,
+        }
+        return render(request, 'modificar_Competencia.html', context)
+    
+    def post(self, request, *args, **kwargs):
+        print("Post de prueba")
+
+
+
+
+class AsignarJurdoView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        # Obtener las áreas de evaluación para cada categoría
+        for categoria in categorias:
+            categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+
+            # Obtener las asignaciones de jurados para cada área de evaluación
+            for area_evaluacion in categoria.areas_evaluacion:
+                area_evaluacion.asignaciones = asignacion_jurado.objects.filter(area_evaluacion=area_evaluacion)
+
+        context = {
+            'competencia_id': competencia_id,
+            'competencia': competencia,
+            'categorias': categorias,
+        }
+        return render(request, 'AsignarJurado.html', context)
+    
+    def post(self, request, *args, **kwargs):
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
+
+        # Obtener las áreas de evaluación para cada categoría
+        for categoria in categorias:
+            categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+        
+
+        categoria_seleccionada = request.POST.get('categoria_seleccionada')
+        AreasEvaluacion_seleccionada = request.POST.get('AreasEvaluacion_seleccionada')
+        busqueda = request.POST.get('busqueda')
+
+        # Realizar la búsqueda del usuario en la base de datos
+        try:
+            usuario = Usuario.objects.get(Nombre1=busqueda)  # Modifica esto según tus campos de usuario
+            area_evaluacion = get_object_or_404(AreaEvaluacion, id=AreasEvaluacion_seleccionada)
+
+            nueva_asignacion = asignacion_jurado(
+                usuario = usuario,
+                area_evaluacion = area_evaluacion,
+            )
+            nueva_asignacion.save()
+            
+        except Usuario.DoesNotExist:
+            # Si no se encuentra, muestra un mensaje de error utilizando Django messages framework
+            messages.error(request, 'El usuario no se encontró en la base de datos.')
+
+        # Devuelve la página, incluyendo los datos y mensajes actualizados
+        return render(request, 'AsignarJurado.html', {
+            'competencia': competencia,
+            'categorias': categorias,
+            # Agrega otros datos necesarios
+        })
+
+
+def buscar_personas(request):
+    search_term = request.POST.get('search_term', None)
+
+    if search_term:
+        resultados = Usuario.objects.filter(Nombre1__icontains=search_term)
+        data = []
+        for usuario in resultados:
+            data.append({
+                'id': usuario.id,
+                'nombre': usuario.Nombre1,
+                'apellido': usuario.Apellido1,
+                'correo': usuario.correo,
+                # Otros campos que desees mostrar en los resultados
+            })
+        return JsonResponse(data, safe=False)
+    else:
+        return JsonResponse([], safe=False)
 

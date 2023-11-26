@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields import CharField, DateField
 import datetime
+from login.models import Usuario
 
 # Create your models here.
 class Competencia(models.Model):
@@ -48,3 +49,13 @@ class Regla(models.Model):
 
     def __str__(self) -> str:
         return f'{self.id} {self.NombreRegla} {self.EstadoRegla}'
+
+
+class asignacion_jurado(models.Model):
+    fechaAsignacion = DateField(default=datetime.date.today)
+    estado_asignacion = CharField(max_length=60, default="Activa")
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='Usuario')
+    area_evaluacion = models.ForeignKey('AreaEvaluacion', on_delete=models.CASCADE, related_name='AreaEvaluacion')
+
+    def __str__(self) -> str:
+        return f'{"Asignacion de Jurado: "} {self.usuario.Nombre1} {"  Área Evaluacion: "} {self.area_evaluacion.NombreAreaEvaluacion}'
