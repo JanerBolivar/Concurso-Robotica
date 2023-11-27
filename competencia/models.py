@@ -14,9 +14,9 @@ class Competencia(models.Model):
     FechaLimiteInscripcion = DateField(default=datetime.date.today)
     FechaLimiteActualizarDatos = DateField(default=datetime.date.today)
     EstadoCompetencia = CharField(max_length=60, default="Disponible")
-    banner1 = models.BinaryField(null=True, blank=True)
-    banner2 = models.BinaryField(null=True, blank=True)
-    banner3 = models.BinaryField(null=True, blank=True)
+    banner1 = CharField(max_length=250, null=True)
+    banner2 = CharField(max_length=250, null=True)
+    banner3 = CharField(max_length=250, null=True)
 
     def __str__(self) -> str:
         return f'{self.id} {self.NombreCompetencia} {self.EstadoCompetencia}'

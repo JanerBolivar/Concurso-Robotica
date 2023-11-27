@@ -1,13 +1,13 @@
+import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
-from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado
+from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado, Robot, inscripcion_competencia
 from django.urls import reverse
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
-from django.http import JsonResponse
-from login.models import Usuario, TipoUsuario
+from login.models import Usuario, TipoUsuario, Equipo, ParticipantesEquipos
 
 from django.contrib import messages
 
@@ -51,22 +51,56 @@ class PruebaCompetenciaView(View):
         
         # Guardar archivos temporalmente y luego leer su contenido binario
         banner1 = request.FILES.get('inputGroupFile01')
-        if banner1:
-            file_path = default_storage.save('temp/' + banner1.name, ContentFile(banner1.read()))
-            nueva_competencia.banner1 = default_storage.open(file_path).read()
 
         banner2 = request.FILES.get('inputGroupFile02')
-        if banner2:
-            file_path = default_storage.save('temp/' + banner2.name, ContentFile(banner2.read()))
-            nueva_competencia.banner2 = default_storage.open(file_path).read()
 
         banner3 = request.FILES.get('inputGroupFile03')
-        if banner3:
-            file_path = default_storage.save('temp/' + banner3.name, ContentFile(banner3.read()))
-            nueva_competencia.banner3 = default_storage.open(file_path).read()
-        
 
-        nueva_competencia.save()
+
+        nombre_banner_1 = "Banner_1"
+        nombre_banner_2 = "Banner_2"
+        nombre_banner_3 = "Banner_3"
+
+        # Rutas para la organización de archivos
+        ruta_competencia = f"static/img/{nueva_competencia.NombreCompetencia}/"
+
+        # Obtener la extensión de la banner_1
+        nombre, extension = os.path.splitext(banner1.name)
+        nombre_banner_1_con_extension = f"{nombre_banner_1}{extension}"
+
+        # Obtener la extensión de la banner_2
+        nombre, extension = os.path.splitext(banner2.name)
+        nombre_banner_2_con_extension = f"{nombre_banner_2}{extension}"
+
+        # Obtener la extensión de la banner_3
+        nombre, extension = os.path.splitext(banner3.name)
+        nombre_banner_3_con_extension = f"{nombre_banner_3}{extension}"
+
+        if banner1:
+            ruta_archivo = f"{ruta_competencia}{nombre_banner_1_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(banner1.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nueva_competencia.banner1 = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nueva_competencia.save()
+
+        if banner2:
+            ruta_archivo = f"{ruta_competencia}{nombre_banner_2_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(banner2.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nueva_competencia.banner2 = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nueva_competencia.save()
+
+        if banner3:
+            ruta_archivo = f"{ruta_competencia}{nombre_banner_3_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(banner3.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nueva_competencia.banner3 = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nueva_competencia.save()
+
+
 
         nueva_competencia = Competencia.objects.latest('id')  # Obtener la última competencia creada
         competencia_id = nueva_competencia.id
@@ -363,6 +397,16 @@ class AsignarJurdoView(View):
         return redirect(reverse('competencia:asignar_jurado', kwargs={'competencia_id': competencia_id}))
 
 
+
+def buscar_usuario_por_correo(correo):
+    try:
+        usuario = Usuario.objects.get(correo=correo)
+        return usuario
+    except Usuario.DoesNotExist:
+        return None
+
+
+
 class InscripcionCompetenciaView(View):
     def get(self, request, *args, **kwargs):
         competencia_id = self.kwargs.get('competencia_id')
@@ -380,6 +424,10 @@ class InscripcionCompetenciaView(View):
     def post(self, request, *args, **kwargs):
 
         competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        categorias = Categoria.objects.filter(competencia=competencia)
         
 
         categoria_seleccionada = request.POST.get('categoria_seleccionada')
@@ -390,32 +438,178 @@ class InscripcionCompetenciaView(View):
         integrante_1 = request.POST.get('integrante_1')
         integrante_2 = request.POST.get('integrante_2')
         integrante_3 = request.POST.get('integrante_3')
-
         imagen_equipo = request.FILES.get('imagen_equipo')
         video_equipo = request.FILES.get('video_equipo')
 
-
         nombre_robot = request.POST.get('nombre_robot')
         descripcion_robot = request.POST.get('descripcion_robot')
-
         imagen_robot = request.FILES.get('imagen_robot')
         diagrama_conexiones = request.FILES.get('diagrama_conexiones')
         programacion_robot = request.FILES.get('programacion_robot')
 
-
-
         imagen_aplicacion = request.FILES.get('imagen_aplicacion')
+        
+        if categoria_seleccionada== "Seleccionar...":
+            messages.error(request, 'Por favor seleccione una categoria.')
+            context = {
+                'competencia': competencia,
+                'categorias': categorias,
+            }
+            return render(request, 'InscripcionCompetencia.html', context)
+        
 
+        if not nombre_equipo or not color_equipo or not descripcion_equipo or not integrante_1 or not imagen_equipo or not video_equipo or not nombre_robot or not descripcion_robot or not imagen_robot or not diagrama_conexiones or not programacion_robot or not imagen_aplicacion:
+            messages.error(request, 'Por favor ingrese todos los capos que tienen (*).')
+            context = {
+                'competencia': competencia,
+                'categorias': categorias,
+            }
+            return render(request, 'InscripcionCompetencia.html', context)
 
+        
         categoria = get_object_or_404(Categoria, id=categoria_seleccionada)
 
-        # Realizar la búsqueda del usuario en la base de datos
-        try:
-            print("Entro")
-            
-        except Usuario.DoesNotExist:
-            # Si no se encuentra, muestra un mensaje de error utilizando Django messages framework
-            messages.error(request, 'El se pudo completar el proceso de inscripción.')
+        correos_integrantes = [integrante_1, integrante_2, integrante_3]
 
-        # Devuelve la página, incluyendo los datos y mensajes actualizados
+        usuarios_encontrados = []
+
+        for correo in correos_integrantes:
+            if correo != '':
+                usuario = buscar_usuario_por_correo(correo)
+                if usuario:
+                    usuarios_encontrados.append(usuario)
+                else:
+                    messages.error(request, f'No se encontró al usuario con el correo: {correo}')
+                    context = {
+                        'competencia': competencia,
+                        'categorias': categorias,
+                    }
+                    return render(request, 'InscripcionCompetencia.html', context)
+        
+        nuevo_equipo = Equipo(
+            NombreEquipo = nombre_equipo,
+            DescipcionEquipo = descripcion_equipo,
+        )
+        nuevo_equipo.save()
+
+        nombre_imagen_equipo = "Imagen_equipo"
+        nombre_video_equipo = "Video_equipo"
+
+        # Obtener la extensión de la imagen_equipo
+        nombre, extension = os.path.splitext(imagen_equipo.name)
+        nombre_imagen_equipo_con_extension = f"{nombre_imagen_equipo}{extension}"
+
+        # Obtener la extensión de la video_equipo
+        nombre, extension = os.path.splitext(video_equipo.name)
+        nombre_video_equipo_con_extension = f"{nombre_video_equipo}{extension}"
+
+        # Rutas para la organización de archivos
+        ruta_competencia = f"static/img/{competencia.NombreCompetencia}/"
+        ruta_categoria = f"{ruta_competencia}/{categoria.NombreCategoria}/"
+        ruta_equipo = f"{ruta_categoria}/{nuevo_equipo.id}_{nombre_equipo}/"
+
+    
+        if imagen_equipo:
+            ruta_archivo = f"{ruta_equipo}{nombre_imagen_equipo_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(imagen_equipo.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nuevo_equipo.imagen_equipo = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nuevo_equipo.save()
+    
+        if video_equipo:
+            ruta_archivo = f"{ruta_equipo}{nombre_video_equipo_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(video_equipo.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nuevo_equipo.video_equipo = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nuevo_equipo.save()
+        
+        for usuario in usuarios_encontrados:
+            # Verificar si el usuario ya tiene una relación "activa" con otro equipo
+            if ParticipantesEquipos.objects.filter(usuario=usuario, Estado_ParticipanteEquipo="Activo").exists():
+                mensaje_error = f"El usuario {usuario} ya tiene una relación activa con otro equipo."
+                messages.error(request, mensaje_error)
+                context = {
+                    'competencia': competencia,
+                    'categorias': categorias,
+                }
+                return render(request, 'InscripcionCompetencia.html', context)
+            else:
+                # Si el usuario no tiene una relación activa, crear la nueva relación
+                nueva_participacion = ParticipantesEquipos(
+                    usuario=usuario,
+                    equipo=nuevo_equipo
+                )
+                nueva_participacion.save()
+        
+        nuevo_robot = Robot(
+            NombreRobot = nombre_robot,
+            DescripcionRobot = descripcion_robot,
+        )
+        nuevo_robot.save()
+
+        nombre_imagen_robot = "Imagen_robot"
+        nombre_diagrama_conexiones = "Diagrama_conexiones"
+        nombre_programacion_robot = "Programacion_robot"
+
+        # Obtener la extensión de la imagen_robot
+        nombre, extension = os.path.splitext(imagen_robot.name)
+        nombre_imagen_robot_con_extension = f"{nombre_imagen_robot}{extension}"
+
+        # Obtener la extensión de la diagrama_conexiones
+        nombre, extension = os.path.splitext(diagrama_conexiones.name)
+        nombre_diagrama_conexiones_con_extension = f"{nombre_diagrama_conexiones}{extension}"
+
+        # Obtener la extensión de la programacion_robot
+        nombre, extension = os.path.splitext(programacion_robot.name)
+        nombre_programacion_robot_con_extension = f"{nombre_programacion_robot}{extension}"
+
+        if imagen_robot:
+            ruta_archivo = f"{ruta_equipo}Robot/{nombre_imagen_robot_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(imagen_robot.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nuevo_robot.imagen_robot = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nuevo_robot.save()
+
+        if diagrama_conexiones:
+            ruta_archivo = f"{ruta_equipo}Robot/{nombre_diagrama_conexiones_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(diagrama_conexiones.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nuevo_robot.diagrama_conexiones = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nuevo_robot.save()
+
+        if programacion_robot:
+            ruta_archivo = f"{ruta_equipo}Robot/{nombre_programacion_robot_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(programacion_robot.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nuevo_robot.programacion_robot = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nuevo_robot.save()
+        
+        nueva_inscripcion = inscripcion_competencia(
+            color = color_equipo,
+            categoria = categoria,
+            equipo = nuevo_equipo,
+            robot = nuevo_robot
+        )
+        nueva_inscripcion.save()
+
+        nombre_imagen_aplicacion = "Imagen_aplicacion"
+
+        # Obtener la extensión de la programacion_robot
+        nombre, extension = os.path.splitext(imagen_aplicacion.name)
+        nombre_imagen_aplicacion_con_extension = f"{nombre_imagen_aplicacion}{extension}"
+
+        if imagen_aplicacion:
+            ruta_archivo = f"{ruta_equipo}{nombre_imagen_aplicacion_con_extension}"
+            ruta_archivo_temporal = default_storage.save(ruta_archivo, ContentFile(imagen_aplicacion.read()))
+
+            # Actualizar el modelo Equipo con la ruta del archivo
+            nueva_inscripcion.imagen_aplicacion = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
+            nueva_inscripcion.save()
+        
+        
         return redirect('/')
