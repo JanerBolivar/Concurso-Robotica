@@ -9,11 +9,16 @@
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
       <li>
-        <a class="dropdown-item" href="{% url 'login' %}">Iniciar Sesión</a>
+        <a class="dropdown-item" href="{% url 'login:prueba' %}">Iniciar Sesión</a>
       </li>
       <li>
         <a class="dropdown-item" href="{% url 'login:registro' %}">Crear cuenta</a>
       </li>
+      {% if usuario.tipo_usuario.NombreTipoUsuario == "Administrador" %}
+      <li>
+        <a class="dropdown-item" href="{% url 'competencia:prueba' %}">Crear competencia</a>
+      </li>
+      {% endif %}
       <li>
         <a class="dropdown-item" href="#">Acerca de</a>
       </li>

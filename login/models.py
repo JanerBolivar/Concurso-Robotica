@@ -1,7 +1,16 @@
 import django
 from django.db import models
-from django.db.models.fields import CharField, DateField, EmailField 
+from django.db.models.fields import CharField, DateField, EmailField
 import datetime
+
+
+class TipoUsuario(models.Model):
+    NombreTipoUsuario = CharField(max_length=60)
+    DescipcionTipoUsuario = CharField(max_length=250)
+    EstadoTipoUsuario = CharField(max_length=60, default="Disponible")
+
+    def __str__(self) -> str:
+        return f'{self.id} {self.NombreTipoUsuario} {self.EstadoTipoUsuario}'
 
 
 class Usuario(models.Model):
@@ -21,17 +30,29 @@ class Usuario(models.Model):
             django.core.validators.MinLengthValidator(8),
         ],
     )
+    tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.CASCADE, related_name='usuarios')
 
-    def verificar_login(self, correo, contrasena):
-        try:
-            usuario = Usuario.objects.get(correo=correo)  # Buscar un usuario con el correo proporcionado
-            if usuario.contrasena == contrasena:
-                # La contraseña es correcta, retorna la información del usuario
-                return usuario
-            else:
-                return "Contraseña incorrecta"
-        except Usuario.DoesNotExist:
-            return "Cuenta no existe"
-
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.Nombre1} {self.Apellido1}'
+
+
+class Equipo(models.Model):
+    NombreEquipo = CharField(max_length=60)
+    DescipcionEquipo = CharField(max_length=250)
+    imagen_equipo = CharField(max_length=250, null=True)
+    video_equipo = CharField(max_length=250, null=True)
+    EstadoEquipo = CharField(max_length=60, default="Activo")
+    fecha_registro = DateField(default=datetime.date.today)
+
+    def __str__(self):
+        return f'{self.NombreEquipo} {"Fecha registro: "} {self.fecha_registro}'
+
+
+class ParticipantesEquipos(models.Model):
+    Estado_ParticipanteEquipo = CharField(max_length=60, default="Activo")
+    fecha_ParticipanteEquipo = DateField(default=datetime.date.today)
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='ParticipantesUsuarios')
+    equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE, related_name='ParticipantesEquipos')
+
+    def __str__(self):
+        return f'{"Estado participacion: "} {self.Estado_ParticipanteEquipo}'
