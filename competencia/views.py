@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado, Robot, inscripcion_competencia
 from django.urls import reverse
+from django.db.models import Sum
+import datetime
+
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -243,7 +246,18 @@ class crearAreaEvaluacionView(View):
         categoria_id = self.kwargs.get('categoria_id')
 
         categoria = get_object_or_404(Categoria, id=categoria_id)
-        
+
+        porcentaje_total = AreaEvaluacion.objects.filter(categoria=categoria).aggregate(total=Sum('Porcentaje'))['total'] or 0
+
+        # Sumar el porcentaje del área de evaluación que se está intentando agregar
+        nuevo_porcentaje = int(porcentaje_area_evaluacion)
+        total_con_nuevo = porcentaje_total + nuevo_porcentaje
+
+        # Validar si al agregar el nuevo porcentaje supera el 100%
+        if total_con_nuevo > 100:
+            messages.error(request, 'La suma de los porcentajes de las áreas de evaluación supera el 100%.')
+            return redirect(reverse('competencia:crear_RA_categoria', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
+            
         nueva_area_evaluacion = AreaEvaluacion(
             NombreAreaEvaluacion=nombre_area_evaluacion,
             DescipcionAreaEvaluacion=descripcion_area_evaluacion,
@@ -397,6 +411,19 @@ class AsignarJurdoView(View):
         return redirect(reverse('competencia:asignar_jurado', kwargs={'competencia_id': competencia_id}))
 
 
+class Inscripcion_ExitosaView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        context = {
+            'competencia_id': competencia_id,
+            'competencia': competencia,
+        }
+        return render(request, 'confirmacion_Inscripcion.html', context)
+
+
 
 def buscar_usuario_por_correo(correo):
     try:
@@ -460,6 +487,15 @@ class InscripcionCompetenciaView(View):
 
         if not nombre_equipo or not color_equipo or not descripcion_equipo or not integrante_1 or not imagen_equipo or not video_equipo or not nombre_robot or not descripcion_robot or not imagen_robot or not diagrama_conexiones or not programacion_robot or not imagen_aplicacion:
             messages.error(request, 'Por favor ingrese todos los capos que tienen (*).')
+            context = {
+                'competencia': competencia,
+                'categorias': categorias,
+            }
+            return render(request, 'InscripcionCompetencia.html', context)
+        
+        fecha_actual = datetime.date.today()
+        if fecha_actual > competencia.FechaLimiteInscripcion:
+            messages.error(request, 'La fecha límite de inscripción ha expirado.')
             context = {
                 'competencia': competencia,
                 'categorias': categorias,
@@ -611,5 +647,50 @@ class InscripcionCompetenciaView(View):
             nueva_inscripcion.imagen_aplicacion = ruta_archivo  # Asigna la ruta al campo correspondiente en el modelo
             nueva_inscripcion.save()
         
+        competencia_id = competencia.id
         
-        return redirect('/')
+        return redirect(reverse('competencia:incripcion_exitosa', kwargs={'competencia_id': competencia_id}))
+
+
+class Mostrar_InformacionCompetenciaView(View):
+    def get(self, request, *args, **kwargs):
+        competencias = Competencia.objects.filter(EstadoCompetencia="Disponible")
+        
+        competencias_info = []
+        for competencia in competencias:
+            categorias = Categoria.objects.filter(competencia=competencia)
+            for categoria in categorias:
+                categoria.reglas = Regla.objects.filter(categoria=categoria)
+                categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+
+            competencias_info.append({
+                'competencia': competencia,
+                'categorias': categorias
+            })
+
+        context = {
+            'competencias_info': competencias_info,
+        }
+        return render(request, 'mostrar_competencias.html', context)
+
+
+class GestionarCompetenciasView(View):
+    def get(self, request, *args, **kwargs):
+        competencias = Competencia.objects.filter(EstadoCompetencia="Disponible")
+        
+        competencias_info = []
+        for competencia in competencias:
+            categorias = Categoria.objects.filter(competencia=competencia)
+            for categoria in categorias:
+                categoria.reglas = Regla.objects.filter(categoria=categoria)
+                categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+
+            competencias_info.append({
+                'competencia': competencia,
+                'categorias': categorias
+            })
+
+        context = {
+            'competencias_info': competencias_info,
+        }
+        return render(request, 'Gestionar_Competencias.html', context)

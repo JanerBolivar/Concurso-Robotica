@@ -20,10 +20,16 @@
       </li>
       {% endif %}
       <li>
-        <a class="dropdown-item" href="#">Acerca de</a>
+        <a class="dropdown-item" href="{% url 'competencia:gestionar_competencias' %}">Gestionar competencias</a>
       </li>
       <li>
-        <a class="dropdown-item" href="#">Contacto</a>
+        <a class="dropdown-item" href="{% url 'competencia:mostrar_competencias' %}">Competencias Disponibles</a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="{% url 'acerca_de' %}">Acerca de</a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="#">Historial</a>
       </li>
     </ul>
   </div>

@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Competencias competencias | Concurso de robótica
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container p-4">
+    {% for competencia_info in competencias_info %}
+    <div class="row p-3">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <h2>{{ competencia_info.competencia.NombreCompetencia }}</h2>
+            </div>
+            <small id="registroHelp" class="form-text text-muted"></small>
+        </div>
+    </div>
+
+    <div class="row p-3">
+        <div class="col">
+            <div class="form-group">
+                <h4>Descripción</h4>
+                <p>{{ competencia_info.competencia.DescipcionCompetencia }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row p-3">
+        <div class="col">
+            <div class="form-group">
+                <h4>Lugar de Competencia</h4>
+                <p>{{ competencia_info.competencia.LugarCompetencia }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <h4>Fecha de la Competencia</h4>
+                <p>{{ competencia_info.competencia.FechaCompetencia }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <h4>Fecha límite para Inscripciones</h4>
+                <p>{{ competencia_info.competencia.FechaLimiteInscripcion }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <h4>Fecha límite para Actualizar Datos</h4>
+                <p>{{ competencia_info.competencia.FechaLimiteActualizarDatos }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregar Categorías -->
+    <div class="row p-3">
+        <div class="col">
+            <h4>Categorías</h4>
+            {% for categoria in competencia_info.categorias %}
+            <div class="row p-3">
+                <div class="card">
+                    <div class="card-header">
+                        Categoría {{ forloop.counter }} <!-- Muestra el número de la categoría -->
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ categoria.NombreCategoria }}</h5>
+                        <p class="card-text">{{ categoria.DescipcionCategoria }}</p>
+
+                        <!-- Reglas de la categoría -->
+                        <h6>Reglas:</h6>
+                        <ul>
+                            {% for regla in categoria.reglas %}
+                            <li>{{ regla.NombreRegla }}: {{ regla.DescipcionRegla }}</li>
+                            {% empty %}
+                            <li>No hay reglas</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Áreas de evaluación de la categoría -->
+                        <h6>Área de Evaluación:</h6>
+                        <ul>
+                            {% for area_evaluacion in categoria.areas_evaluacion %}
+                            <li>{{ area_evaluacion.NombreAreaEvaluacion }}: {{ area_evaluacion.DescipcionAreaEvaluacion }}</li>
+                            {% empty %}
+                            <li>No hay áreas de evaluación</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row p-3">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <!-- Actualiza el botón "Inscribirme" con un identificador único -->
+                <a href="{% url 'competencia:modificar_competencia' competencia_info.competencia.id %}" class="btn btn-primary">Actualizar</a>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    {% endfor %}
+</div>
+{% endblock %}
