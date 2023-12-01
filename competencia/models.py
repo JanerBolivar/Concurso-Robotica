@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields import CharField, DateField
-import datetime
+import datetime 
+from login.models import Usuario
 
 # Create your models here.
 class Competencia(models.Model):
@@ -35,6 +36,7 @@ class AreaEvaluacion(models.Model):
     EstadoAreaEvaluacion = CharField(max_length=60, default="Disponible")
     Porcentaje = models.IntegerField()
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='AreaEvaluacion')
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='Usuario')
 
     def __str__(self) -> str:
         return f'{self.id} {self.NombreAreaEvaluacion} {self.EstadoAreaEvaluacion}'

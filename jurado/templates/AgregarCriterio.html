@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Modulo jurado | Concurso de robótica
+{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Categoría {{ categoria.NombreCategoria }}</h1>
+    <div class="card custom-card">
+      <div class="card-body">
+        <h2 class="card-title">Área Evaluación: {{ area_evaluacion.NombreAreaEvaluacion }}</h2>
+        <p class="card-text descripcion">
+          <strong>Porcentaje:</strong> {{ area_evaluacion.Porcentaje }}%<br />
+          <strong>Descripción:</strong> {{ area_evaluacion.DescipcionAreaEvaluacion|linebreaksbr }}
+        </p>
+      </div>
+    </div>
+
+    <div class="modal" id="agregarCriterioModal" tabindex="-1" role="dialog" aria-labelledby="agregarCriterioModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="agregarCriterioModalLabel">Agregar Criterio</h5>
+            <button type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="{% url 'jurado:agregar_criterio' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id %}">
+              {% csrf_token %}
+
+              <!-- Campo de nombre del criterio -->
+              <div class="form-group">
+                <label for="nombreCriterio">Nombre del Criterio:</label>
+                <input type="text" class="form-control" id="nombreCriterio" name="nombre_Criterio" required>
+              </div>
+
+              <!-- Campo de porcentaje del criterio -->
+              <div class="form-group">
+                <label for="porcentajeCriterio">Porcentaje del Criterio:</label>
+                <input type="number" class="form-control" id="porcentajeCriterio" name="porcentaje_Criterio" min="1" max="100" required>
+              </div>
+
+              <!-- Botón para guardar -->
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script para abrir automáticamente el modal al cargar la página -->
+  <script>
+    $(document).ready(function () {
+      $('#agregarCriterioModal').modal('show');
+    });
+
+    // Desactivar el evento de ocultar el modal al hacer clic fuera del mismo
+    $('#agregarCriterioModal .close').on('click', function() {
+      $('#agregarCriterioModal').modal('hide');
+    });
+
+    $('#agregarCriterioModal').on('hidden.bs.modal', function () {
+      // Limpia los campos del formulario cuando se cierra el modal
+      $(this).find('form')[0].reset();
+    });
+  </script>
+
+{% endblock %}
