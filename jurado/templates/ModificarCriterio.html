@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Modificar Criterio
+{% endblock %}
+
+{% block content %}
+  <div class="container mt-1">
+      <h1>Modificar Criterio</h1>
+      <form method="post" action="{% url 'jurado:modificar_criterio' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="nombre_criterio">Nombre del Criterio:</label>
+          <input type="text" class="form-control" name="nombre_criterio" value="{{ criterio.nombre_Criterio }}" required />
+        </div>
+
+        <div class="form-group">
+          <label for="porcentaje_criterio">Porcentaje del Criterio:</label>
+          <input type="number" class="form-control" name="porcentaje_criterio" value="{{ criterio.porcentaje_Criterio }}" max="100" min="1" required />
+        </div>
+ 
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary float-left">Guardar cambios</button>
+
+        </div>
+      </form>
+      <button type="submit" class="btn btn-secondary float-right">Eliminar Criterio</button>
+    </div>
+  </div>
+{% endblock %}

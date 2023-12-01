@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Modulo jurado | Concurso de robótica
+{% endblock %}
+
+{% block content %}
+  <style>
+    .custom-card {
+      border: 2px solid black;
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .custom-card h2 {
+      color: black;
+      font-size: 24px;
+      margin-right: auto;
+      font-size: 60px;
+    }
+    .custom-card .card-text {
+      color: black;
+      position: absolute;
+      top: 10px;
+    }
+    
+    .custom-card .descripcion {
+      color: black;
+      font-size: 18px;
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translate(0, -50%);
+      width: 50%;
+      max-height: 100%;
+      overflow: hidden;
+      white-space: normal;
+    }
+    
+    .custom-card .disponible {
+      top: 10px;
+      left: 10px;
+    }
+  </style>
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-danger" role="alert">
+      {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  <div class="container mt-4">
+    <h2>Categorías</h2>
+    {% for categoria in categorias %}
+      <a href="{% url 'jurado:areas_evaluacion' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id %}" class="card custom-card">
+        <div class="card-body">
+          <h2 class="card-title">{{ categoria.NombreCategoria }}</h2>
+          <p class="card-text descripcion">{{ categoria.DescipcionCategoria|linebreaksbr }}</p>
+          <h6 class="card-text disponible">{{ categoria.EstadoCategoria }}</h6>
+        </div>
+      </a>
+      {% empty %}
+      <p>No hay categorias</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -9,7 +9,7 @@ class TipoUsuario(models.Model):
     DescipcionTipoUsuario = CharField(max_length=250)
     EstadoTipoUsuario = CharField(max_length=60, default="Disponible")
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{self.id} {self.NombreTipoUsuario} {self.EstadoTipoUsuario}'
 
 
@@ -32,7 +32,7 @@ class Usuario(models.Model):
     )
     tipo_usuario = models.ForeignKey('TipoUsuario', on_delete=models.CASCADE, related_name='usuarios')
 
-    def __str__(self):
+    def _str_(self):
         return f'{self.Nombre1} {self.Apellido1}'
 
 
@@ -44,7 +44,7 @@ class Equipo(models.Model):
     EstadoEquipo = CharField(max_length=60, default="Activo")
     fecha_registro = DateField(default=datetime.date.today)
 
-    def __str__(self):
+    def _str_(self):
         return f'{self.NombreEquipo} {"Fecha registro: "} {self.fecha_registro}'
 
 
@@ -54,5 +54,5 @@ class ParticipantesEquipos(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, related_name='ParticipantesUsuarios')
     equipo = models.ForeignKey('Equipo', on_delete=models.CASCADE, related_name='ParticipantesEquipos')
 
-    def __str__(self):
+    def _str_(self):
         return f'{"Estado participacion: "} {self.Estado_ParticipanteEquipo}'

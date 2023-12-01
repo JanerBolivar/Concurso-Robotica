@@ -1,11 +1,58 @@
 {% extends 'layout.html' %}
-
 {% load static %}
 
+{% block title %}
+  Modulo jurado | Concurso de robótica
+{% endblock %}
+
 {% block content %}
+  <style>
+    .custom-card {
+      border: 2px solid black;
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      margin-bottom: 20px; /* Espaciado entre tarjetas */
+    }
+    
+    .custom-card h5 {
+      color: black;
+      font-size: 24px; /* Ajustar según sea necesario */
+      text-align: center;
+      font-size: 60px;
+    }
+    
+    .custom-card .card-text {
+      color: black;
+      position: absolute;
+      top: 10px;
+    }
+    
+    .custom-card .fecha {
+      top: 10px;
+      right: 10px;
+    }
+    
+    .custom-card .estado {
+      top: 10px;
+      left: 10px;
+    }
+  </style>
 
-
-<h1>Desafio Cloud 2023</h1>
-<h2>23 de mayo</h2>
-
+  <div class="container mt-4">
+    <h2>Competencias</h2> 
+    {% for competencia in competencias %}
+      <div class="row p-3">
+        <div class="col">
+          <a href="{% url 'jurado:categorias' usuario_id=usuario.id competencia_id=competencia.id %}" class="card custom-card">
+            <div class="card-body">
+              <h5 class="card-title">{{ competencia.NombreCompetencia }}</h5>
+              <p class="card-text fecha">{{ competencia.FechaCompetencia }}</p>
+              <p class="card-text estado">{{ competencia.EstadoCompetencia }}</p>
+            </div>
+          </a>          
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}

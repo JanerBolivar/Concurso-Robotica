@@ -18,7 +18,7 @@ class Competencia(models.Model):
     banner2 = CharField(max_length=250, null=True)
     banner3 = CharField(max_length=250, null=True)
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{self.id} {self.NombreCompetencia} {self.EstadoCompetencia}'
 
 
@@ -28,7 +28,7 @@ class Categoria(models.Model):
     EstadoCategoria = CharField(max_length=60, default="Disponible")
     competencia = models.ForeignKey('Competencia', on_delete=models.CASCADE, related_name='Categoria')
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{self.id} {self.NombreCategoria} {self.EstadoCategoria}'
 
 
@@ -39,7 +39,7 @@ class AreaEvaluacion(models.Model):
     Porcentaje = models.IntegerField()
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='AreaEvaluacion')
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{self.id} {self.NombreAreaEvaluacion} {self.EstadoAreaEvaluacion}'
 
 
@@ -49,7 +49,7 @@ class Regla(models.Model):
     EstadoRegla = CharField(max_length=60, default="Disponible")
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='Regla')
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{self.id} {self.NombreRegla} {self.EstadoRegla}'
 
 
@@ -59,7 +59,7 @@ class asignacion_jurado(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='Usuario')
     area_evaluacion = models.ForeignKey('AreaEvaluacion', on_delete=models.CASCADE, related_name='AreaEvaluacion')
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{"Asignacion de Jurado: "} {self.usuario.Nombre1} {"  Área Evaluacion: "} {self.area_evaluacion.NombreAreaEvaluacion}'
 
 
@@ -72,7 +72,7 @@ class Robot(models.Model):
     EstadoRobot = CharField(max_length=60, default="Activo")
     FechaRegistro = DateField(default=datetime.date.today)
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f'{"Nombre: "} {self.NombreRobot}'
 
 

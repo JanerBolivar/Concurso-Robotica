@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Modulo jurado | Concurso de robótica
+{% endblock %}
+
+{% block content %}
+<style>
+    .custom-card {
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .etiqueta-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1>Categoría {{ categoria.NombreCategoria }}</h1>
+
+    {% for area_evaluacion in areas_evaluacion %}
+        <div class="card custom-card">
+            <div class="card-body">
+                <h2 class="card-title">Área Evaluación: {{ area_evaluacion.NombreAreaEvaluacion }}</h2>
+                <p class="card-text descripcion">
+                    <strong>Porcentaje:</strong> {{ area_evaluacion.Porcentaje }}%<br>
+                    <strong>Descripción:</strong> {{ area_evaluacion.DescipcionAreaEvaluacion|linebreaksbr }}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="etiqueta-container">
+        <p class="etiqueta-criterio"><strong>Criterio:</strong></p>
+        <p class="etiqueta-porcentaje"><strong>Porcentaje %:</strong></p>
+    </div>
+
+    <div class="container mt-4">
+        <form method="post" action="{% url 'jurado:CrearCriterioEvaluacion' competencia_id=competencia.id categoria_id=categoria.id %}">
+            {% csrf_token %}
+            <label for="criterio">Criterio de Evaluación:</label>
+            <input type="text" name="criterio" required>
+
+            <label for="porcentaje">Porcentaje (%):</label>
+            <input type="number" name="porcentaje" min="1" max="100" required>
+
+            <button type="submit" class="btn btn-secondary btn-lg btn-block">Agregar Criterio</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
