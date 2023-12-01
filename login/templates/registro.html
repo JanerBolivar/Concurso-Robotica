@@ -46,7 +46,7 @@
             </select>
           </div>
           <div class="col">
-            <input type="text" class="form-control {% if campos_vacios_error.telefono %}{% endif %}" placeholder="Numero de celular" name="telefono" data-toggle="tooltip" data-placement="top" title="{% if campos_vacios_error.telefono %}{% endif %}" value="{{ telefono|default:'' }}" />
+            <input type="number" class="form-control {% if campos_vacios_error.telefono %}{% endif %}" placeholder="Numero de celular" name="telefono" data-toggle="tooltip" data-placement="top" title="{% if campos_vacios_error.telefono %}{% endif %}" value="{{ telefono|default:'' }}"/>
           </div>
         </div>
         <div class="row p-3">

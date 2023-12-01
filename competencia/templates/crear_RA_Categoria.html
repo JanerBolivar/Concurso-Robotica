@@ -11,6 +11,13 @@ Agregar Reglas y Áreas de Evaluación | Concurso de robótica
   <form id="crearCompetenciaForm" method="post"
     action="{% url 'competencia:crear_categoria' competencia_id=competencia_id %}">
     {% csrf_token %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
     <div class="row p-3">
       <div class="col">
         <div class="d-flex justify-content-center">
@@ -60,7 +67,7 @@ Agregar Reglas y Áreas de Evaluación | Concurso de robótica
     </div>
     <div class="row p-3">
       <div class="col">
-        <a href="{% url 'competencia:crear_regla' competencia_id=categoria_id categoria_id=competencia_id %}"
+        <a href="{% url 'competencia:crear_regla' competencia_id=competencia_id categoria_id=categoria_id %}"
           class="btn btn-primary">Agregar una regla</a>
       </div>
     </div>
@@ -88,7 +95,7 @@ Agregar Reglas y Áreas de Evaluación | Concurso de robótica
     </div>
     <div class="row p-3">
       <div class="col">
-        <a href="{% url 'competencia:crear_area_evaluacion' competencia_id=categoria_id categoria_id=competencia_id %}"
+        <a href="{% url 'competencia:crear_area_evaluacion' competencia_id=competencia_id categoria_id=categoria_id %}"
           class="btn btn-primary">Agregar una área de evaluación</a>
       </div>
     </div>

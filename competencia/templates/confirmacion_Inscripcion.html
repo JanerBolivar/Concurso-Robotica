@@ -1,0 +1,21 @@
+{% extends 'base2.html' %}
+
+{% block title %}
+Inscripción registrada | Concurso de robótica
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card text-center shadow">
+        <div class="card-body">
+            <h5 class="card-title">¡Inscripción exitosa!</h5>
+            <p class="card-text">Tu inscripción ha sido registrada correctamente. Ahora forma parte de la competencia "<strong>{{competencia.NombreCompetencia}}</strong>".<br>
+                Espera la confirmación del administrador para participar.<br>
+                Mientras tanto, revisa tu correo electrónico para recibir más detalles y verifica la sección de noticias en nuestro sitio para actualizaciones.</p>
+            <a href="/" class="btn btn-primary">Ir a la página principal</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,3 +4,8 @@ from django.shortcuts import render
 class HomeView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'index.html', {})
+
+
+class AcercaDeView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'acerca_de.html', {})
