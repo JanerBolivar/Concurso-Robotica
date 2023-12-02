@@ -23,8 +23,21 @@ class LoginHomeView(View):
 
 class pruebaView(View):
     def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'Login.html', context)
+
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if not usuario_id:
+            context = {
+                'usuario_id': usuario_id
+            }
+            return render(request, 'Login.html', context)
+        else:
+            usuario = Usuario.objects.get(id=usuario_id)
+            context = {
+                'usuario_id': usuario_id,
+                'usuario': usuario,
+            }
+            return render(request, 'Login.html', context)
     
     def post(self, request, *args, **kwargs):
         correo = request.POST.get('correo', '')
@@ -45,12 +58,26 @@ class pruebaView(View):
             }
             return render(request, 'Login.html', context)
 
-        # Autenticar al usuario
-        response = HttpResponse("¡Inicio de sesión exitoso!")
-        expiration = datetime.now() + timedelta(days=7)  # Duración de la cookie (7 días)
-        response.set_cookie('sesion_iniciada', 'usuario_autenticado', expires=expiration)
-        return response
-        
+        usuario = Usuario.objects.filter(correo=correo).first()
+
+        if usuario:
+            # Verificar la contraseña
+            hashed_password = usuario.contrasena.encode('utf-8')
+            if bcrypt.checkpw(contrasena.encode('utf-8'), hashed_password):
+                # Contraseña correcta, iniciar sesión y redirigir al home
+                response = redirect('/')
+                
+                # Almacenar el ID del usuario en la cookie
+                response.set_cookie('usuario_id', str(usuario.id), max_age=14400)  # El ID se almacena como una cadena
+                
+                return response
+
+
+
+def logout_view(request):
+    response = redirect('/')
+    response.delete_cookie('usuario_id')
+    return response
 
 
 
@@ -181,6 +208,10 @@ class RegistroView(View):
             # Verificar la contraseña
             hashed_password = usuario.contrasena.encode('utf-8')
             if bcrypt.checkpw(contrasena.encode('utf-8'), hashed_password):
-                # Contraseña correcta, iniciar sesión y redirigir al home
-                return render(request, 'Home.html', {'usuario': usuario})
+                response = redirect('/')
+                
+                # Almacenar el ID del usuario en la cookie
+                response.set_cookie('usuario_id', str(usuario.id), max_age=14400)  # El ID se almacena como una cadena
+                
+                return response
 
