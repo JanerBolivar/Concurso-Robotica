@@ -1,7 +1,5 @@
 {% load static %}
 
-<!--NN-->
-
 <nav class="navbar navbar-light">
   <a class="navbar-brand fw-bold fst-italic" href="/">CONCURSO ROBÓTICA</a>
   <div class="dropdown dropleft">
@@ -9,20 +7,26 @@
       <img src="{% static 'img/Menu.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" />
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-      <li>
-        <a class="dropdown-item" href="{% url 'login:prueba' %}">Iniciar Sesión</a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{% url 'login:registro' %}">Crear cuenta</a>
-      </li>
-      {% if usuario.tipo_usuario.NombreTipoUsuario == "Administrador" %}
-      <li>
-        <a class="dropdown-item" href="{% url 'competencia:prueba' %}">Crear competencia</a>
-      </li>
+      {% if usuario_id %}
+        <li>
+          <a class="dropdown-item" href="{% url 'login:cerrar_sesion' %}">Cerrar sesión</a>
+        </li>
+          {% if usuario.tipo_usuario.NombreTipoUsuario == "Administrador" %}
+          <li>
+            <a class="dropdown-item" href="{% url 'competencia:prueba' %}">Crear competencia</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'competencia:gestionar_competencias' %}">Gestionar competencias</a>
+          </li>
+          {% endif %}
+      {% else %}
+        <li>
+          <a class="dropdown-item" href="{% url 'login:prueba' %}">Iniciar Sesión</a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="{% url 'login:registro' %}">Crear cuenta</a>
+        </li>
       {% endif %}
-      <li>
-        <a class="dropdown-item" href="{% url 'competencia:gestionar_competencias' %}">Gestionar competencias</a>
-      </li>
       <li>
         <a class="dropdown-item" href="{% url 'competencia:mostrar_competencias' %}">Competencias Disponibles</a>
       </li>

@@ -28,10 +28,22 @@ class CrearCompetenciaView(View):
 
 class PruebaCompetenciaView(View):
     def get(self, request, *args, **kwargs):
-        context = {
+        # Verificar si la cookie está presente y obtener el ID del usuario
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
             
-        }
-        return render(request, 'pruebaCompetencia.html', context)
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                }
+                return render(request, 'pruebaCompetencia.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         nombre_competencia = request.POST.get('nombre_competencia')
@@ -114,10 +126,22 @@ class PruebaCompetenciaView(View):
 class crearCategoriaView(View):
     def get(self, request, *args, **kwargs):
         competencia_id = self.kwargs.get('competencia_id')
-        context = {
-            'competencia_id': competencia_id,
-        }
-        return render(request, 'crearCategoria.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                }
+                return render(request, 'crearCategoria.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         nombre_categoria = request.POST.get('nombre_categoria')
@@ -152,13 +176,25 @@ class agregar_CategoriaView(View):
 
         categorias = Categoria.objects.filter(competencia=competencia)
 
-        context = {
-            'competencia_id': competencia_id,
-            'nombre_competencia': competencia.NombreCompetencia,
-            'descripcion_competencia': competencia.DescipcionCompetencia,
-            'categorias': categorias,
-        }
-        return render(request, 'agregar_Categorias.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'nombre_competencia': competencia.NombreCompetencia,
+                    'descripcion_competencia': competencia.DescipcionCompetencia,
+                    'categorias': categorias,
+                }
+                return render(request, 'agregar_Categorias.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         print("Post de prueba")
@@ -177,15 +213,27 @@ class crear_RA_CategoriaView(View):
         reglas = Regla.objects.filter(categoria=categoria)
         areas = AreaEvaluacion.objects.filter(categoria=categoria)
 
-        context = {
-            'competencia_id': competencia_id,
-            'categoria_id': categoria_id,
-            'nombre_categoria': categoria.NombreCategoria,
-            'descripcion_categoria': categoria.DescipcionCategoria,
-            'reglas': reglas,
-            'areas': areas,
-        }
-        return render(request, 'crear_RA_Categoria.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'categoria_id': categoria_id,
+                    'nombre_categoria': categoria.NombreCategoria,
+                    'descripcion_categoria': categoria.DescipcionCategoria,
+                    'reglas': reglas,
+                    'areas': areas,
+                }
+                return render(request, 'crear_RA_Categoria.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         print("Post de prueba")
@@ -198,11 +246,23 @@ class crearReglaView(View):
         competencia_id = self.kwargs.get('competencia_id')
         categoria_id = self.kwargs.get('categoria_id')
 
-        context = {
-            'competencia_id': competencia_id,
-            'categoria_id': categoria_id,
-        }
-        return render(request, 'crearRegla.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'categoria_id': categoria_id,
+                }
+                return render(request, 'crearRegla.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
 
@@ -231,11 +291,23 @@ class crearAreaEvaluacionView(View):
         competencia_id = self.kwargs.get('competencia_id')
         categoria_id = self.kwargs.get('categoria_id')
 
-        context = {
-            'competencia_id': competencia_id,
-            'categoria_id': categoria_id,
-        }
-        return render(request, 'crearAreaEvaluacion.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'categoria_id': categoria_id,
+                }
+                return render(request, 'crearAreaEvaluacion.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         nombre_area_evaluacion = request.POST.get('nombre_area_evaluacion')
@@ -283,16 +355,28 @@ class Mostrar_InformacionView(View):
         for categoria in categorias:
             categoria.reglas = Regla.objects.filter(categoria=categoria)
             categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
+        
 
+        usuario_id = request.COOKIES.get('usuario_id')
 
-        context = {
-            'competencia_id': competencia_id,
-            'competencia': competencia,
-            'nombre_competencia': competencia.NombreCompetencia,
-            'descripcion_competencia': competencia.DescipcionCompetencia,
-            'categorias': categorias,
-        }
-        return render(request, 'Mostrar_Informacion.html', context)
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'competencia': competencia,
+                    'nombre_competencia': competencia.NombreCompetencia,
+                    'descripcion_competencia': competencia.DescipcionCompetencia,
+                    'categorias': categorias,
+                }
+                return render(request, 'Mostrar_Informacion.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         print("Post de prueba")
@@ -312,15 +396,26 @@ class ModificarCompetenciaView(View):
             categoria.reglas = Regla.objects.filter(categoria=categoria)
             categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
 
+        usuario_id = request.COOKIES.get('usuario_id')
 
-        context = {
-            'competencia_id': competencia_id,
-            'competencia': competencia,
-            'nombre_competencia': competencia.NombreCompetencia,
-            'descripcion_competencia': competencia.DescipcionCompetencia,
-            'categorias': categorias,
-        }
-        return render(request, 'modificar_Competencia.html', context)
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'competencia': competencia,
+                    'nombre_competencia': competencia.NombreCompetencia,
+                    'descripcion_competencia': competencia.DescipcionCompetencia,
+                    'categorias': categorias,
+                }
+                return render(request, 'modificar_Competencia.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
         print("Post de prueba")
@@ -361,14 +456,25 @@ class AsignarJurdoView(View):
             categoria.areas_evaluacion = AreaEvaluacion.objects.filter(categoria=categoria)
         
 
-        
-        context = {
-            'competencia_id': competencia_id,
-            'competencia': competencia,
-            'categorias': categorias,
-            'categorias_con_asignaciones': categorias_con_asignaciones,
-        }
-        return render(request, 'AsignarJurado.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                    'competencia': competencia,
+                    'categorias': categorias,
+                    'categorias_con_asignaciones': categorias_con_asignaciones,
+                }
+                return render(request, 'AsignarJurado.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
 
@@ -389,7 +495,7 @@ class AsignarJurdoView(View):
 
         # Realizar la búsqueda del usuario en la base de datos
         try:
-            usuario = Usuario.objects.get(Nombre1=busqueda)  # Modifica esto según tus campos de usuario
+            usuario = Usuario.objects.get(correo=busqueda)  # Modifica esto según tus campos de usuario
             area_evaluacion = get_object_or_404(AreaEvaluacion, id=AreasEvaluacion_seleccionada)
             
             tipo_usuario = get_object_or_404(TipoUsuario, NombreTipoUsuario="Jurado")
@@ -417,11 +523,20 @@ class Inscripcion_ExitosaView(View):
 
         competencia = get_object_or_404(Competencia, id=competencia_id)
 
-        context = {
-            'competencia_id': competencia_id,
-            'competencia': competencia,
-        }
-        return render(request, 'confirmacion_Inscripcion.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            context = {
+                'usuario_id': usuario_id,
+                'usuario': usuario,
+                'competencia_id': competencia_id,
+                'competencia': competencia,
+            }
+            return render(request, 'confirmacion_Inscripcion.html', context)
+        else:
+            return redirect('login:prueba')
 
 
 
@@ -442,11 +557,20 @@ class InscripcionCompetenciaView(View):
 
         categorias = Categoria.objects.filter(competencia=competencia)
 
-        context = {
-            'competencia': competencia,
-            'categorias': categorias,
-        }
-        return render(request, 'InscripcionCompetencia.html', context)
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            context = {
+                'usuario_id': usuario_id,
+                'usuario': usuario,
+                'competencia': competencia,
+                'categorias': categorias,
+            }
+            return render(request, 'InscripcionCompetencia.html', context)
+        else:
+            return redirect('login:prueba')
     
     def post(self, request, *args, **kwargs):
 
@@ -478,29 +602,17 @@ class InscripcionCompetenciaView(View):
         
         if categoria_seleccionada== "Seleccionar...":
             messages.error(request, 'Por favor seleccione una categoria.')
-            context = {
-                'competencia': competencia,
-                'categorias': categorias,
-            }
-            return render(request, 'InscripcionCompetencia.html', context)
+            return redirect(reverse('competencia:inscripcion_competencia', kwargs={'competencia_id': competencia_id}))
         
 
         if not nombre_equipo or not color_equipo or not descripcion_equipo or not integrante_1 or not imagen_equipo or not video_equipo or not nombre_robot or not descripcion_robot or not imagen_robot or not diagrama_conexiones or not programacion_robot or not imagen_aplicacion:
             messages.error(request, 'Por favor ingrese todos los capos que tienen (*).')
-            context = {
-                'competencia': competencia,
-                'categorias': categorias,
-            }
-            return render(request, 'InscripcionCompetencia.html', context)
+            return redirect(reverse('competencia:inscripcion_competencia', kwargs={'competencia_id': competencia_id}))
         
         fecha_actual = datetime.date.today()
         if fecha_actual > competencia.FechaLimiteInscripcion:
             messages.error(request, 'La fecha límite de inscripción ha expirado.')
-            context = {
-                'competencia': competencia,
-                'categorias': categorias,
-            }
-            return render(request, 'InscripcionCompetencia.html', context)
+            return redirect(reverse('competencia:inscripcion_competencia', kwargs={'competencia_id': competencia_id}))
 
         
         categoria = get_object_or_404(Categoria, id=categoria_seleccionada)
@@ -516,11 +628,7 @@ class InscripcionCompetenciaView(View):
                     usuarios_encontrados.append(usuario)
                 else:
                     messages.error(request, f'No se encontró al usuario con el correo: {correo}')
-                    context = {
-                        'competencia': competencia,
-                        'categorias': categorias,
-                    }
-                    return render(request, 'InscripcionCompetencia.html', context)
+                    return redirect(reverse('competencia:inscripcion_competencia', kwargs={'competencia_id': competencia_id}))
         
         nuevo_equipo = Equipo(
             NombreEquipo = nombre_equipo,
@@ -566,11 +674,7 @@ class InscripcionCompetenciaView(View):
             if ParticipantesEquipos.objects.filter(usuario=usuario, Estado_ParticipanteEquipo="Activo").exists():
                 mensaje_error = f"El usuario {usuario} ya tiene una relación activa con otro equipo."
                 messages.error(request, mensaje_error)
-                context = {
-                    'competencia': competencia,
-                    'categorias': categorias,
-                }
-                return render(request, 'InscripcionCompetencia.html', context)
+                return redirect(reverse('competencia:inscripcion_competencia', kwargs={'competencia_id': competencia_id}))
             else:
                 # Si el usuario no tiene una relación activa, crear la nueva relación
                 nueva_participacion = ParticipantesEquipos(
@@ -667,11 +771,24 @@ class Mostrar_InformacionCompetenciaView(View):
                 'competencia': competencia,
                 'categorias': categorias
             })
+        
+        usuario_id = request.COOKIES.get('usuario_id')
 
-        context = {
-            'competencias_info': competencias_info,
-        }
-        return render(request, 'mostrar_competencias.html', context)
+        if not usuario_id:
+            context = {
+                'usuario_id': usuario_id,
+                'competencias_info': competencias_info,
+            }
+            return render(request, 'mostrar_competencias.html', context)
+        else:
+            usuario = Usuario.objects.get(id=usuario_id)
+            context = {
+                'usuario_id': usuario_id,
+                'usuario': usuario,
+                'competencias_info': competencias_info,
+            }
+            return render(request, 'mostrar_competencias.html', context)
+
 
 
 class GestionarCompetenciasView(View):
@@ -689,8 +806,20 @@ class GestionarCompetenciasView(View):
                 'competencia': competencia,
                 'categorias': categorias
             })
+        
+        usuario_id = request.COOKIES.get('usuario_id')
 
-        context = {
-            'competencias_info': competencias_info,
-        }
-        return render(request, 'Gestionar_Competencias.html', context)
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencias_info': competencias_info,
+                }
+                return render(request, 'Gestionar_Competencias.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
