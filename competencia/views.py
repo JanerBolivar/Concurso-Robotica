@@ -2,6 +2,7 @@ import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado, Robot, inscripcion_competencia
+from .models import EquipoLogistica
 from django.urls import reverse
 from django.db.models import Sum
 import datetime
@@ -176,6 +177,8 @@ class agregar_CategoriaView(View):
 
         categorias = Categoria.objects.filter(competencia=competencia)
 
+        equipos_logistica = EquipoLogistica.objects.filter(competencia=competencia)
+
         usuario_id = request.COOKIES.get('usuario_id')
 
         if usuario_id:
@@ -189,6 +192,7 @@ class agregar_CategoriaView(View):
                     'nombre_competencia': competencia.NombreCompetencia,
                     'descripcion_competencia': competencia.DescipcionCompetencia,
                     'categorias': categorias,
+                    'equipos_logistica': equipos_logistica,
                 }
                 return render(request, 'agregar_Categorias.html', context)
             else:
@@ -340,6 +344,54 @@ class crearAreaEvaluacionView(View):
 
 
         return redirect(reverse('competencia:crear_RA_categoria', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
+
+
+
+class crearEquipoLogisticaView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia_id': competencia_id,
+                }
+                return render(request, 'Equipo_Logistica.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
+    
+    def post(self, request, *args, **kwargs):
+
+        nombre_equpo_logistica = request.POST.get('nombre_equpo_logistica')
+        descripcion_equpo_logistica = request.POST.get('descripcion_equpo_logistica')
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        if not nombre_equpo_logistica or not descripcion_equpo_logistica:
+            messages.error(request, 'Por favor ingrese todos los capos.')
+            return redirect(reverse('competencia:crear_equpo_logistica', kwargs={'competencia_id': competencia_id}))
+
+        nueva_equipo_logistica = EquipoLogistica(
+            NombreEquipoLogistica=nombre_equpo_logistica,
+            DescipcionEquipoLogistica=descripcion_equpo_logistica,
+            competencia = competencia,
+        )
+        nueva_equipo_logistica.save()
+
+
+        return redirect(reverse('competencia:agregar_categorias', kwargs={'competencia_id': competencia_id}))
+
+
 
 
 
@@ -835,6 +887,8 @@ class asignar_equipo_logistica(View):
 
         competencia = get_object_or_404(Competencia, id=competencia_id)
 
+        equipos_logistica = EquipoLogistica.objects.filter(competencia=competencia)
+
         if usuario_id:
             usuario = Usuario.objects.get(id=usuario_id)
             
@@ -843,8 +897,9 @@ class asignar_equipo_logistica(View):
                     'usuario_id': usuario_id,
                     'usuario': usuario,
                     'competencia': competencia,
+                    'equipos_logistica': equipos_logistica
                 }
-                return render(request, 'Equipo_Logistica.html', context)
+                return render(request, 'AsignarEquipoLogistica.html', context)
             else:
                 return redirect('acceso_no_autorizado')
         else:
