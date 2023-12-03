@@ -28,7 +28,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form method="post" action="{% url 'jurado:agregar_criterio' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id %}">
+            <form method="post" action="{% url 'jurado:agregar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id %}">
               {% csrf_token %}
 
               <!-- Campo de nombre del criterio -->
