@@ -55,8 +55,9 @@ class Regla(models.Model):
 
 class EquipoLogistica(models.Model):
     NombreEquipoLogistica = CharField(max_length=60)
-    DescipcionEquipoLogistica = CharField(max_length=250)
+    DescipcionEquipoLogistica = CharField(max_length=450)
     EstadoEquipoLogistica = CharField(max_length=60, default="Disponible")
+    competencia = models.ForeignKey('Competencia', on_delete=models.CASCADE, related_name='Comptencia_EquipoLogistica')
 
     def _str_(self) -> str:
         return f'{self.id} {self.NombreEquipoLogistica} {self.EstadoEquipoLogistica}'
