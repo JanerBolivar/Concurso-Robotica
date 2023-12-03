@@ -19,6 +19,11 @@
             <a class="dropdown-item" href="{% url 'competencia:gestionar_competencias' %}">Gestionar competencias</a>
           </li>
           {% endif %}
+          {% if usuario.tipo_usuario.NombreTipoUsuario == "Jurado" %}
+          <li>
+            <a class="dropdown-item" href="{% url 'jurado:competencias_disponibles' %}">Jurado</a>
+          </li>
+          {% endif %}
       {% else %}
         <li>
           <a class="dropdown-item" href="{% url 'login:prueba' %}">Iniciar Sesión</a>

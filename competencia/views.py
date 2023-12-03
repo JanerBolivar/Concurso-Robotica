@@ -823,3 +823,29 @@ class GestionarCompetenciasView(View):
                 return redirect('acceso_no_autorizado')
         else:
             return redirect('login:prueba')
+
+
+
+class asignar_equipo_logistica(View):
+    def get(self, request, *args, **kwargs):
+        # Verificar si la cookie está presente y obtener el ID del usuario
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia': competencia,
+                }
+                return render(request, 'Equipo_Logistica.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')

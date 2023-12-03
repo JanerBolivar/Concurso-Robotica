@@ -54,7 +54,7 @@
   <div class="container mt-4">
     <h2>Categorías</h2>
     {% for categoria in categorias %}
-      <a href="{% url 'jurado:areas_evaluacion' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id %}" class="card custom-card">
+      <a href="{% url 'jurado:areas_evaluacion' competencia_id=competencia.id categoria_id=categoria.id %}" class="card custom-card">
         <div class="card-body">
           <h2 class="card-title">{{ categoria.NombreCategoria }}</h2>
           <p class="card-text descripcion">{{ categoria.DescipcionCategoria|linebreaksbr }}</p>

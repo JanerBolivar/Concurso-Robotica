@@ -2,96 +2,98 @@
 {% load static %}
 
 {% block title %}
-  Modulo jurado | Concurso de robótica
+Modulo jurado | Concurso de robótica
 {% endblock %}
 
 {% block content %}
-  <style>
-    .custom-card {
-      border: none;
-      border-radius: 10px;
-      padding: 10px;
-      position: relative;
-      margin-bottom: 20px;
-    }
-    
-    .etiqueta-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    
-    .resaltar-criterio {
-      background-color: #ffeeba;
-      border: 1px solid #ffc107;
-    }
-    
-    .custom-card .card-body .card-text {
-      text-align: left;
-    }
-    
-    .navegacion {
-      margin-top: 20px;
-    }
-  </style>
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-danger" role="alert">
-      {{ message }}
-  </div>
-  {% endfor %}
-  {% endif %}
-  <div class="container mt-4">
-    <h1>Categoría {{ categoria.NombreCategoria }}</h1>
-    {% for area_evaluacion in areas_evaluacion %}
-      <div class="card custom-card">
-        <div class="card-body">
-          <h1 class="card-title">Área Evaluación: {{ area_evaluacion.NombreAreaEvaluacion }}</h1>
-          <p class="card-text descripcion">
-            <strong>Porcentaje:</strong> {{ area_evaluacion.Porcentaje }}%<br />
-            <strong>Descripción:</strong> {{ area_evaluacion.DescipcionAreaEvaluacion|linebreaksbr }}
-          </p>
+<style>
+  .custom-card {
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    margin-bottom: 20px;
+  }
 
-          <div class="row p-3">
-            <div class="col">
-              <h4>Criterios:</h4>
-            </div>
-            <div class="row">
-              {% for criterio in criterios_evaluacion %}
-                <div class="col-md-12 {% if criterio.destacar %}{% endif %}">
-                  <div class="card custom-card">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ criterio.nombre_Criterio }}</h5>
-                      <p class="card-text">{{ criterio.descripcion_Criterio|linebreaksbr }}</p>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge badge-secondary">{{ criterio.porcentaje_Criterio }}%</span>
-                        <a href="{% url 'jurado:modificar_criterio' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}" class="btn btn-light">
-                          <img src="{% static 'img/Editar.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {% empty %}
-                <div class="col-md-12">
-                  <p>No hay criterios</p>
-                </div>
-              {% endfor %}
-            </div>
+  .etiqueta-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
 
-            <a href="{% url 'jurado:agregar_criterio' usuario_id=usuario.id competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id %}" class="btn btn-light btn-lg btn-block">
-              <img src="{% static 'img/agregar.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" />
-              Agregar Criterio
-            </a>
+  .resaltar-criterio {
+    background-color: #ffeeba;
+    border: 1px solid #ffc107;
+  }
+
+  .custom-card .card-body .card-text {
+    text-align: left;
+  }
+
+  .navegacion {
+    margin-top: 20px;
+  }
+</style>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-danger" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+<div class="container mt-4">
+  <h1>Categoría {{ categoria.NombreCategoria }}</h1>
+  <div class="card custom-card">
+    <div class="card-body">
+      <h1 class="card-title">Área Evaluación: {{ area_evaluacion.NombreAreaEvaluacion }}</h1>
+      <p class="card-text descripcion">
+        <strong>Porcentaje:</strong> {{ area_evaluacion.Porcentaje }}%<br />
+        <strong>Descripción:</strong> {{ area_evaluacion.DescipcionAreaEvaluacion|linebreaksbr }}
+      </p>
+
+      <div class="row p-3">
+        <div class="col">
+          <h4>Criterios:</h4>
+        </div>
+        <div class="row">
+          {% for criterio in criterios_evaluacion %}
+          <div class="col-md-12 {% if criterio.destacar %}{% endif %}">
+            <div class="card custom-card">
+              <div class="card-body">
+                <h5 class="card-title">{{ criterio.nombre_Criterio }}</h5>
+                <p class="card-text">{{ criterio.descripcion_Criterio|linebreaksbr }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge badge-secondary">{{ criterio.porcentaje_Criterio }}%</span>
+                  <a href="{% url 'jurado:modificar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}"
+                    class="btn btn-light">
+                    <img src="{% static 'img/Editar.png' %}" width="30" height="30" class="d-inline-block align-top"
+                      alt="" />
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
+          {% empty %}
+          <div class="col-md-12">
+            <p>No hay criterios</p>
+          </div>
+          {% endfor %}
         </div>
 
-        <div class="navegacion">
-          <a href="{% url 'jurado:categorias' usuario_id=usuario.id competencia_id=competencia.id %}" class="btn btn-secondary float-left">Atrás</a>
-          <button class="btn btn-primary float-right">Continuar</button>
-          <div class="clearfix"></div>
-        </div>
+        <a href="{% url 'jurado:agregar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id %}"
+          class="btn btn-light btn-lg btn-block">
+          <img src="{% static 'img/agregar.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" />
+          Agregar Criterio
+        </a>
       </div>
-    {% endfor %}
+    </div>
+
+    <div class="navegacion">
+      <a href="{% url 'jurado:categorias_disponibles' competencia_id=competencia.id %}"
+        class="btn btn-secondary float-left">Atrás</a>
+      <button class="btn btn-primary float-right">Continuar</button>
+      <div class="clearfix"></div>
+    </div>
   </div>
+</div>
 {% endblock %}

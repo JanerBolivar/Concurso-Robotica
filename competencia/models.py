@@ -53,6 +53,26 @@ class Regla(models.Model):
         return f'{self.id} {self.NombreRegla} {self.EstadoRegla}'
 
 
+class EquipoLogistica(models.Model):
+    NombreEquipoLogistica = CharField(max_length=60)
+    DescipcionEquipoLogistica = CharField(max_length=250)
+    EstadoEquipoLogistica = CharField(max_length=60, default="Disponible")
+
+    def _str_(self) -> str:
+        return f'{self.id} {self.NombreEquipoLogistica} {self.EstadoEquipoLogistica}'
+
+
+class Participacion_Equipo(models.Model):
+    fechaParticipacion = DateField(default=datetime.date.today)
+    estado_participacion = CharField(max_length=60, default="Activa")
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='UsuarioEquipoLogistica')
+    equipo_logistica = models.ForeignKey('EquipoLogistica', on_delete=models.CASCADE, related_name='ParticipacionEquipoLogistica')
+
+    def _str_(self) -> str:
+        return f'{"Asignacion de Jurado: "} {self.usuario.Nombre1} {"  Área Evaluacion: "} {self.equipo_logistica.NombreEquipoLogistica}'
+
+
+
 class asignacion_jurado(models.Model):
     fechaAsignacion = DateField(default=datetime.date.today)
     estado_asignacion = CharField(max_length=60, default="Activa")

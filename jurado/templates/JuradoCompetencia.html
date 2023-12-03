@@ -44,7 +44,7 @@
     {% for competencia in competencias %}
       <div class="row p-3">
         <div class="col">
-          <a href="{% url 'jurado:categorias' usuario_id=usuario.id competencia_id=competencia.id %}" class="card custom-card">
+          <a href="{% url 'jurado:categorias_disponibles' competencia_id=competencia.id %}" class="card custom-card">
             <div class="card-body">
               <h5 class="card-title">{{ competencia.NombreCompetencia }}</h5>
               <p class="card-text fecha">{{ competencia.FechaCompetencia }}</p>

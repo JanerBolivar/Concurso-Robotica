@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import CrearCompetenciaView, PruebaCompetenciaView, crearCategoriaView, crear_RA_CategoriaView, crearReglaView, crearAreaEvaluacionView, agregar_CategoriaView, Mostrar_InformacionView
 from .views import ModificarCompetenciaView, AsignarJurdoView, InscripcionCompetenciaView, Inscripcion_ExitosaView, Mostrar_InformacionCompetenciaView, GestionarCompetenciasView
+from .views import asignar_equipo_logistica
 
 app_name="competencia"
 
@@ -16,7 +17,8 @@ urlpatterns = [
     path('<int:competencia_id>/agregar-categorias/', agregar_CategoriaView.as_view(), name='agregar_categorias'),
     path('<int:competencia_id>/mostrar-informacion/', Mostrar_InformacionView.as_view(), name='mostrar_informacion'),
     path('<int:competencia_id>/modificar-competencia/', ModificarCompetenciaView.as_view(), name='modificar_competencia'),
-    path('<int:competencia_id>/modificar-competencia/asignar-jurado', AsignarJurdoView.as_view(), name='asignar_jurado'),
+    path('<int:competencia_id>/modificar-competencia/asignar-jurado/', AsignarJurdoView.as_view(), name='asignar_jurado'),
+    path('<int:competencia_id>/modificar-competencia/asignar-equpo-logistica/', asignar_equipo_logistica.as_view(), name='asignar_equpo_logistica'),
     path('<int:competencia_id>/categoria/<int:categoria_id>/agregar-regla/', crearReglaView.as_view(), name='crear_regla'),
     path('<int:competencia_id>/categoria/<int:categoria_id>/agregar-area_evaluacion/', crearAreaEvaluacionView.as_view(), name='crear_area_evaluacion'),
 ]
