@@ -2,7 +2,7 @@ import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado, Robot, inscripcion_competencia
-from .models import EquipoLogistica
+from .models import EquipoLogistica, Participacion_Equipo
 from django.urls import reverse
 from django.db.models import Sum
 import datetime
@@ -53,6 +53,10 @@ class PruebaCompetenciaView(View):
         fecha_competencia = request.POST.get('fecha_Competencia')
         fecha_limite_inscripcion = request.POST.get('fecha_limite_inscripcion_Competencia')
         fecha_limite_actualizar = request.POST.get('fecha_limite_actualizar_inscripcion_Competencia')
+
+        if not nombre_competencia or not descripcion_competencia or not lugar_competencia or not fecha_competencia or not fecha_limite_inscripcion or not fecha_limite_actualizar:
+            messages.error(request, 'Por favor ingrese todos los campos.')
+            return redirect('competencia:prueba')
         
         nueva_competencia = Competencia(
             NombreCompetencia=nombre_competencia,
@@ -71,6 +75,11 @@ class PruebaCompetenciaView(View):
         banner2 = request.FILES.get('inputGroupFile02')
 
         banner3 = request.FILES.get('inputGroupFile03')
+
+
+        if not banner1 or not banner2 or not banner3:
+            messages.error(request, 'Por favor ingrese todos los banners.')
+            return redirect('competencia:prueba')
 
 
         nombre_banner_1 = "Banner_1"
@@ -889,6 +898,19 @@ class asignar_equipo_logistica(View):
 
         equipos_logistica = EquipoLogistica.objects.filter(competencia=competencia)
 
+        equipos_logistica_asignados = []
+
+        for equipo in equipos_logistica:
+            asignaciones = Participacion_Equipo.objects.filter(equipo_logistica=equipo)
+            integrantes_asignados = [asignacion.usuario for asignacion in asignaciones]
+
+            if integrantes_asignados:  # Si hay integrantes asignados, añadir a la lista
+                equipos_logistica_asignados.append({
+                    'equipo': equipo,
+                    'integrantes': integrantes_asignados,
+                })
+
+
         if usuario_id:
             usuario = Usuario.objects.get(id=usuario_id)
             
@@ -897,10 +919,49 @@ class asignar_equipo_logistica(View):
                     'usuario_id': usuario_id,
                     'usuario': usuario,
                     'competencia': competencia,
-                    'equipos_logistica': equipos_logistica
+                    'equipos_logistica': equipos_logistica,
+                    'equipos_logistica_asignados': equipos_logistica_asignados,
                 }
                 return render(request, 'AsignarEquipoLogistica.html', context)
             else:
                 return redirect('acceso_no_autorizado')
         else:
             return redirect('login:prueba')
+    
+
+    def post(self, request, *args, **kwargs):
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        equipo_seleccionado = request.POST.get('equipo_seleccionado')
+        busqueda = request.POST.get('busqueda')
+
+        if equipo_seleccionado == "Seleccionar..." or not equipo_seleccionado:
+            messages.error(request, 'Por favor seleccione un equipo y ingrese un correo.')
+            return redirect(reverse('competencia:asignar_equpo_logistica', kwargs={'competencia_id': competencia_id}))
+            
+
+        # Realizar la búsqueda del usuario en la base de datos
+        try:
+            usuario = Usuario.objects.get(correo=busqueda)  # Modifica esto según tus campos de usuario
+            equipo_logistica = get_object_or_404(EquipoLogistica, id=equipo_seleccionado)
+            
+            tipo_usuario = get_object_or_404(TipoUsuario, NombreTipoUsuario="Logistica")
+
+            usuario.tipo_usuario = tipo_usuario
+            usuario.save()
+
+            nueva_asignacion = Participacion_Equipo(
+                usuario = usuario,
+                equipo_logistica = equipo_logistica,
+            )
+            nueva_asignacion.save()
+            
+        except Usuario.DoesNotExist:
+            # Si no se encuentra, muestra un mensaje de error utilizando Django messages framework
+            messages.error(request, 'El usuario no se encontró en la base de datos.')
+
+        # Devuelve la página, incluyendo los datos y mensajes actualizados
+        return redirect(reverse('competencia:asignar_equpo_logistica', kwargs={'competencia_id': competencia_id}))

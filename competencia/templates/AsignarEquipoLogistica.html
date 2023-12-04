@@ -9,7 +9,7 @@ Asignar Equipo Logistica | Concurso de robótica
 {% block content %}
 <div class="container p-4">
     <form id="crearCompetenciaForm" method="post"
-        action="{% url 'competencia:asignar_jurado' competencia_id=competencia.id %}">
+        action="{% url 'competencia:asignar_equpo_logistica' competencia_id=competencia.id %}">
         {% csrf_token %}
         {% if messages %}
         {% for message in messages %}
@@ -40,7 +40,7 @@ Asignar Equipo Logistica | Concurso de robótica
             <div class="col">
                 <div class="form-group">
                     <h4>Equipos de Logistica</h4>
-                    <select id="inputEquipo" class="form-control" name="equipo_seleccionada">
+                    <select id="inputEquipo" class="form-control" name="equipo_seleccionado">
                         <option selected>Seleccionar...</option>
                         {% for equipo_logistica in equipos_logistica|dictsort:"id" %}
                         <option value="{{ equipo_logistica.id }}">{{ equipo_logistica.NombreEquipoLogistica }}</option>
@@ -62,6 +62,26 @@ Asignar Equipo Logistica | Concurso de robótica
                 </div>
             </div>
         </div>
+
+
+        {% for equipo_asignado in equipos_logistica_asignados %}
+        <div class="row p-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        Equipo de Logística: {{ equipo_asignado.equipo.NombreEquipoLogistica }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Integrantes:</h5>
+                        {% for integrante in equipo_asignado.integrantes %}
+                        <p class="card-text">{{ integrante.Nombre1 }} {{ integrante.Apellido1 }} - {{ integrante.correo }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
 
         <div class="row p-3">
             <div class="col">
