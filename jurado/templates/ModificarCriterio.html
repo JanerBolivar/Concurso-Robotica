@@ -8,8 +8,7 @@ Modificar Criterio
 {% block content %}
 <div class="container mt-1">
   <h1>Modificar Criterio</h1>
-  <form method="post"
-    action="{% url 'jurado:modificar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}">
+  <form method="post" action="{% url 'jurado:modificar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}">
     {% csrf_token %}
 
     <div class="form-group">
@@ -25,8 +24,21 @@ Modificar Criterio
 
     <div class="form-group">
       <button type="submit" class="btn btn-primary float-left">Guardar cambios</button>
+      <!-- Agregamos el botón de eliminar dentro del formulario -->
+      <button type="button" class="btn btn-secondary float-right" onclick="eliminarCriterio()">Eliminar Criterio</button>
+      <!-- Agregamos un campo oculto con el ID del criterio -->
+      <input type="hidden" name="criterio_id" value="{{ criterio.id }}">
     </div>
   </form>
-  <button type="submit" class="btn btn-secondary float-right">Eliminar Criterio</button>
-</div>
+
+<script>
+  function eliminarCriterio() {
+    // Confirmar si realmente se desea eliminar el criterio
+    if (confirm("¿Seguro que desea eliminar este criterio?")) {
+      // Redirigir a la URL de eliminación
+      window.location.href = "{% url 'jurado:eliminar_criterio' competencia_id=competencia.id categoria_id=categoria.id area_evaluacion_id=area_evaluacion.id criterio_id=criterio.id %}";
+    }
+  }
+</script>
+
 {% endblock %}

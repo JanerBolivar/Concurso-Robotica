@@ -1,0 +1,119 @@
+<!-- Equipos.html -->
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Equipos | Concurso de robótica
+{% endblock %}
+
+{% block content %}
+  <style>
+    .team-card {
+      border: 2px solid black;
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .team-card h2 {
+      color: black;
+      font-size: 24px;
+      margin-right: auto;
+      font-size: 60px;
+    }
+    .team-card .card-text {
+      color: black;
+      position: absolute;
+      top: 10px;
+    }
+
+    .team-card .team-description {
+      color: black;
+      font-size: 18px;
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translate(0, -50%);
+      width: 50%;
+      max-height: 100%;
+      overflow: hidden;
+      white-space: normal;
+    }
+
+    .team-card .team-photo {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .evaluar-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+
+    .team-number-label {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-weight: bold;
+      font-size: 24px; 
+    }
+
+    .integrantes-list {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translate(0, -50%);
+      width: 50%;
+    }
+
+    .integrantes-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .integrantes-list li {
+      margin-bottom: 5px;
+    }
+  </style>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="container mt-4">
+    <h2>Equipos</h2>
+    {% for inscripcion in inscripciones %}
+      <div class="card team-card">
+        <div class="card-body">
+          <span class="team-number-label">{{ forloop.counter }}</span>
+          <h2 class="card-title">{{ inscripcion.equipo.NombreEquipo }}</h2>
+          <h3>Nombre del robot:{{ inscripcion.robot.NombreRobot }}</h3>
+
+          <div class="integrantes-list">
+            <p>Integrantes del Equipo:</p>
+            <ul>
+              {% for participante in inscripcion.equipo.ParticipantesEquipos.all %}
+                <li>{{ participante.usuario.Nombre1 }} {{ participante.usuario.Apellido1 }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <a href="{% url 'jurado:evaluar_equipo' competencia_id=competencia.id categoria_id=categoria.id equipo_id=inscripcion.equipo.id %}" class="btn btn-primary evaluar-button">Evaluar</a>
+        </div>
+      </div>
+    {% empty %}
+      <p>No hay equipos</p>
+    {% endfor %}
+       
+    <div class="navegacion">
+      <a href="{% url 'jurado:areas_evaluacion' competencia_id=competencia.id categoria_id=categoria.id %}" class="btn btn-secondary float-left">Atrás</a>
+      <a href="#" class="btn btn-primary float-right" style="margin-right: 10px;">Terminar</a>
+    </div>
+  </div>
+
+{% endblock %}

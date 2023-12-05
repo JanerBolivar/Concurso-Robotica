@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+  Evaluar Equipo | Concurso de robótica
+{% endblock %}
+
+{% block content %}
+<style>
+
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .small-input {
+    width: 60px; 
+  }
+</style>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-danger" role="alert">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="container mt-4">
+  <h2>Evaluación de Equipo - {{ equipo.NombreEquipo }}</h2>
+
+  <form method="post" action="{% url 'jurado:evaluar_equipo' competencia_id=competencia.id categoria_id=categoria.id equipo_id=equipo.id %}">
+    {% csrf_token %}
+
+    <div class="mb-4">
+      <label for="oportunidad">Seleccionar Oportunidad:</label>
+      <select class="form-control" id="oportunidad" name="oportunidad">
+        <option value="1" {% if 1 in oportunidades_evaluadas %}disabled{% endif %}>Oportunidad 1</option>
+        <option value="2" {% if 2 in oportunidades_evaluadas %}disabled{% endif %}>Oportunidad 2</option>
+        <option value="3" {% if 3 in oportunidades_evaluadas %}disabled{% endif %}>Oportunidad 3</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <div class="card-body">
+        <div>
+          <h3>Criterios de Evaluación</h3>
+        </div>
+        <div>
+          <h5 class="card-title">Nota:</h5>
+        </div>
+      </div>
+    </div>
+
+    {% for criterio in criterios %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{{ criterio.nombre_Criterio }}</h5>
+          <input type="number" class="form-control small-input" id="nota_{{ criterio.id }}" name="nota_{{ criterio.id }}" min="0" max="5" step="0.1" required>
+        </div>
+      </div>
+    {% endfor %}
+
+    <a href="{% url 'jurado:equipos' competencia_id=competencia.id categoria_id=categoria.id %}" class="btn btn-primary float-right" style="margin-right: 10px;">Guardar Evaluación</a>
+  </form>
+</div>
+
+{% endblock %}

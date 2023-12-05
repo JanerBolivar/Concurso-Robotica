@@ -87,12 +87,10 @@ Modulo jurado | Concurso de robótica
         </a>
       </div>
     </div>
-
+   
     <div class="navegacion">
-      <a href="{% url 'jurado:categorias_disponibles' competencia_id=competencia.id %}"
-        class="btn btn-secondary float-left">Atrás</a>
-      <button class="btn btn-primary float-right">Continuar</button>
-      <div class="clearfix"></div>
+      <a href="{% url 'jurado:categorias_disponibles' competencia_id=competencia.id %}" class="btn btn-secondary float-left">Atrás</a>
+      <a href="{% url 'jurado:equipos' competencia_id=competencia.id categoria_id=categoria.id %}" class="btn btn-primary float-right" style="margin-right: 10px;">Continuar</a>
     </div>
   </div>
 </div>
