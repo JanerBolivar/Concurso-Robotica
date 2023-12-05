@@ -4,13 +4,17 @@
 
 {% block content %}
 <div class="container p-4">
-  {% if error_message %}
-  <div class="alert alert-danger" role="alert">
-    {{ error_message }}
-  </div>
-  {% endif %}
   <form method="post" action="{% url 'login:prueba' %}">
     {% csrf_token %}
+
+    {% csrf_token %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
 
     <div class="row p-3">
       <div class="col">

@@ -100,11 +100,25 @@ class Robot(models.Model):
 class inscripcion_competencia(models.Model):
     Estado_inscripcion = CharField(max_length=60, default="Registrado")
     FechaInscripcion = DateField(default=datetime.date.today)
-    oportunidad1 = models.IntegerField(null=True)
-    oportunidad2 = models.IntegerField(null=True)
-    oportunidad3 = models.IntegerField(null=True)
+    oportunidad1 = models.FloatField(null=True)
+    oportunidad2 = models.FloatField(null=True)
+    oportunidad3 = models.FloatField(null=True)
+    resultado_total = models.FloatField(null=True)
     color = CharField(max_length=60, default="Sin color")
     imagen_aplicacion = CharField(max_length=250, null=True)
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE, related_name='inscripcion_categoria')
     equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE, related_name='inscripcion_equipo')
     robot = models.ForeignKey('Robot', on_delete=models.CASCADE, related_name='inscripcion_robot')
+
+    def __str__(self) -> str:
+        return f'{"Estado inscripcion: "} {self.Estado_inscripcion} {self.equipo.NombreEquipo}'
+
+
+class Tarea_EquipoLogistica(models.Model):
+    NombreTarea = CharField(max_length=60)
+    DescipcionTarea = CharField(max_length=250)
+    EstadoTarea = CharField(max_length=60, default="Disponible")
+    equipo_logistica = models.ForeignKey('EquipoLogistica', on_delete=models.CASCADE, related_name='TareasEquipoLogistica')
+
+    def __str__(self) -> str:
+        return f'{self.NombreTarea} {self.DescipcionTarea}'

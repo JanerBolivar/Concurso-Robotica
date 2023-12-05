@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
@@ -71,6 +72,9 @@ class pruebaView(View):
                 response.set_cookie('usuario_id', str(usuario.id), max_age=14400)  # El ID se almacena como una cadena
                 
                 return response
+            else:
+                messages.error(request, 'El correo o la contraseña es incorrecto.')
+                return redirect('login:prueba')
 
 
 

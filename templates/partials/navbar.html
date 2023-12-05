@@ -24,6 +24,11 @@
             <a class="dropdown-item" href="{% url 'jurado:competencias_disponibles' %}">Jurado</a>
           </li>
           {% endif %}
+          {% if usuario.tipo_usuario.NombreTipoUsuario == "Logistica" %}
+          <li>
+            <a class="dropdown-item" href="{% url 'logistica:competencias_disponibles' %}">Logística</a>
+          </li>
+          {% endif %}
       {% else %}
         <li>
           <a class="dropdown-item" href="{% url 'login:prueba' %}">Iniciar Sesión</a>

@@ -3,63 +3,84 @@
 {% load static %}
 
 {% block content %}
-
-<div class="container">
-  <section class="w-90">
-    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img src="{% static 'img/Fondo1.jpg' %}" class="d-block w-100" alt="...">
-          <div class="carousel-caption d-none d-md-block">
-            <h5>First slide label</h5>
-            <p>Some representative placeholder content for the first slide.</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{% static 'img/Fondo2.jpg' %}" class="d-block w-100" alt="...">
-          <div class="carousel-caption d-none d-md-block">
-            <h5>Second slide label</h5>
-            <p>Some representative placeholder content for the second slide.</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{% static 'img/Fondo3.jpg' %}" class="d-block w-100" alt="...">
-          <div class="carousel-caption d-none d-md-block">
-            <h5>Third slide label</h5>
-            <p>Some representative placeholder content for the third slide.</p>
-          </div>
+<section style="height: 80%;">
+  <div id="carouselExampleCaptions" class="carousel slide shadow" data-ride="carousel"
+  style="padding: 1%; height: 100%;">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'img/Fondo1.jpeg' %}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h3>{{ competencia.NombreCompetencia }}</h3>
+          <p>Logar de la competencia: {{ competencia.LugarCompetencia }}</p>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-target="#carouselExampleCaptions" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-target="#carouselExampleCaptions" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </button>
+      <div class="carousel-item">
+        <img src="{% static 'img/Fondo2.jpeg' %}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h3>{{ competencia.NombreCompetencia }}</h3>
+          <p>Los esperamos el día {{ competencia.FechaCompetencia }}</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'img/Fondo3.jpeg' %}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h3>{{ competencia.NombreCompetencia }}</h3>
+          <p>La fecha limite para las inscripciones es el día {{ competencia.FechaLimiteInscripcion }}</p>
+        </div>
+      </div>
     </div>
-  </section>
-  <section class="w-90 h-70 mt-4">
-    <h3>{{ competencia.NombreCompetencia }}</h3>
-<div class="row p-3">
-  {% for categoria in categorias %}
-    <div class="col">
-      <div class="d-flex justify-content-center">
-        <div class="card shadow p-4 d-flex align-items-stretch" style="width: 18rem;">
-          <div class="card-body">
-            <h5 class="card-title text-center">{{ categoria.NombreCategoria }}</h5>
-            <p class="card-text" style="height: 18rem;">{{ categoria.DescipcionCategoria }}</p>
+    <button class="carousel-control-prev" type="button" data-target="#carouselExampleCaptions" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-target="#carouselExampleCaptions" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </button>
+  </div>
+</section>
+<section style="background-color: #E5E5E5; width: 100%; padding: 1%; display: flex;">
+  <div class="row p-3">
+    <section style="width: 40%; height: 90%; position: relative; overflow: hidden;">
+      <div
+        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ competencia.banner2 }}'); background-size: cover; filter: brightness(60%);">
+      </div>
+      <div
+        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(231, 231, 231, 0.425);">
+      </div>
+      <div style="position: relative; z-index: 1; padding: 10% 0;">
+        <div class="d-flex justify-content-center">
+          <h2 style="text-align: center;">{{ competencia.NombreCompetencia }}</h2>
+        </div>
+        <p class="card-subtitle p-3">
+          {{ competencia.DescipcionCompetencia }}
+        </p>
+        <h6 class="card-text p-3">Logar de la competencia: {{ competencia.LugarCompetencia }}</h6>
+        <h6 class="card-text p-3">Los esperamos el día {{ competencia.FechaCompetencia }}</h6>
+      </div>
+    </section>
+    <section style="width: 40%;">
+      <div class="container p-5">
+        <div class="row p-3">
+          {% for categoria in categorias %}
+          <div class="col">
             <div class="d-flex justify-content-center">
-              <a href="#" class="card-link">Tabla de posiciones</a>
+              <div class="card shadow p-4 d-flex align-items-stretch" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title text-center">{{ categoria.NombreCategoria }}</h5>
+                  <p class="card-text" style="height: 18rem; overflow: hidden; text-overflow: ellipsis;">{{ categoria.DescipcionCategoria }}</p>
+                  <div class="d-flex justify-content-center">
+                    <a href="{% url 'competencia:tabla_resultado' competencia_id=competencia.id categoria_id=categoria.id %}" class="card-link">Tabla de posiciones</a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          {% endfor %}
         </div>
       </div>
-    </div>
-  {% endfor %}
-</div>
+    </section>
+  </div>
+</section>
 
-  </section>
-</div>
 {% endblock %}
