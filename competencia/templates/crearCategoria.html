@@ -10,6 +10,13 @@
   <div class="container p-4">
     <form id="crearCompetenciaForm" method="post" action="{% url 'competencia:crear_categoria' competencia_id=competencia_id %}">
       {% csrf_token %}
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
       <div class="row p-3">
         <div class="col">
           <div class="d-flex justify-content-center">
@@ -30,7 +37,7 @@
         <div class="col">
           <div class="form-group">
             <label for="descripcion_categoria">Descripción</label>
-            <textarea class="form-control" id="descripcion_categoria" rows="4" name="descripcion_categoria"></textarea>
+            <textarea class="form-control" id="descripcion_categoria" rows="12" name="descripcion_categoria"></textarea>
           </div>
         </div>
       </div>
