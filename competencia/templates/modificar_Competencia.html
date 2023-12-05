@@ -100,22 +100,22 @@
         <div class="row p-3">
             <div class="col">
                 <div class="d-flex justify-content-center">
+                    <a href="/" class="btn btn-secondary">Voler al inicio</a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-center">
                     <a href="{% url 'competencia:asignar_jurado' competencia_id=competencia.id %}" class="btn btn-primary">Agregar un jurado</a>
                 </div>
             </div>
             <div class="col">
                 <div class="d-flex justify-content-center">
-                    <a href="{% url 'competencia:asignar_equpo_logistica' competencia_id=competencia.id %}" class="btn btn-primary">Agregar Equipo de Logistica</a>
+                    <a href="{% url 'competencia:asignar_equpo_logistica' competencia_id=competencia.id %}" class="btn btn-primary">Asignar integrantes de Logística</a>
                 </div>
             </div>
             <div class="col">
                 <div class="d-flex justify-content-center">
                     <a href="{% url 'competencia:crear_tareas' competencia_id=competencia.id %}" class="btn btn-primary">Crear tareas de Logistica</a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="d-flex justify-content-center">
-                    <a href="/" class="btn btn-secondary">Voler al inicio</a>
                 </div>
             </div>
         </div>

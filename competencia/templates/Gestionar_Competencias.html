@@ -98,6 +98,12 @@ Competencias competencias | Concurso de robótica
         <div class="col">
             <div class="d-flex justify-content-center">
                 <!-- Actualiza el botón "Inscribirme" con un identificador único -->
+                <a href="{% url 'competencia:agregar_categorias' competencia_info.competencia.id %}" class="btn btn-primary">Editar Competencia</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <!-- Actualiza el botón "Inscribirme" con un identificador único -->
                 <a href="{% url 'competencia:modificar_competencia' competencia_info.competencia.id %}" class="btn btn-primary">Actualizar</a>
             </div>
         </div>

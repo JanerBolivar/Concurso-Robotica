@@ -7,9 +7,17 @@
 {% load static %}
 
 {% block content %}
+<section style="height: 80; padding: 5%;">
   <div class="container p-4">
     <form id="crearCompetenciaForm" method="post" action="{% url 'competencia:crear_regla' competencia_id=competencia_id categoria_id=categoria_id %}">
       {% csrf_token %}
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
       <div class="row p-3">
         <div class="col">
           <div class="d-flex justify-content-center">
@@ -44,4 +52,5 @@
       </div>
     </form>
   </div>
+</section>
 {% endblock %}

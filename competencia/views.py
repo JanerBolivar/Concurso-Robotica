@@ -160,6 +160,10 @@ class crearCategoriaView(View):
         competencia_id = kwargs['competencia_id']
 
         competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        if not nombre_categoria or not descripcion_categoria:
+            messages.error(request, 'Por favor ingrese todos los campos.')
+            return redirect(reverse('competencia:crear_categoria', kwargs={'competencia_id': competencia_id}))
         
         nueva_categoria = Categoria(
             NombreCategoria=nombre_categoria,
@@ -279,13 +283,17 @@ class crearReglaView(View):
     
     def post(self, request, *args, **kwargs):
 
-        nombre_regla = request.POST.get('nombre_regla')
-        descripcion_regla = request.POST.get('descripcion_regla')
-
         competencia_id = self.kwargs.get('competencia_id')
         categoria_id = self.kwargs.get('categoria_id')
 
         categoria = get_object_or_404(Categoria, id=categoria_id)
+
+        nombre_regla = request.POST.get('nombre_regla')
+        descripcion_regla = request.POST.get('descripcion_regla')
+
+        if not nombre_regla or not descripcion_regla:
+            messages.error(request, 'Por favor ingrese todos los campos.')
+            return redirect(reverse('competencia:crear_regla', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
         
         nueva_regla = Regla(
             NombreRegla=nombre_regla,
@@ -333,6 +341,10 @@ class crearAreaEvaluacionView(View):
         categoria = get_object_or_404(Categoria, id=categoria_id)
 
         porcentaje_total = AreaEvaluacion.objects.filter(categoria=categoria).aggregate(total=Sum('Porcentaje'))['total'] or 0
+
+        if not nombre_area_evaluacion or not descripcion_area_evaluacion or not porcentaje_area_evaluacion:
+            messages.error(request, 'Por favor ingrese todos los campos.')
+            return redirect(reverse('competencia:crear_area_evaluacion', kwargs={'competencia_id': competencia_id, 'categoria_id': categoria_id}))
 
         # Sumar el porcentaje del área de evaluación que se está intentando agregar
         nuevo_porcentaje = int(porcentaje_area_evaluacion)
@@ -553,6 +565,11 @@ class AsignarJurdoView(View):
         categoria_seleccionada = request.POST.get('categoria_seleccionada')
         AreasEvaluacion_seleccionada = request.POST.get('AreasEvaluacion_seleccionada')
         busqueda = request.POST.get('busqueda')
+
+        if not categoria_seleccionada or not AreasEvaluacion_seleccionada or not busqueda:
+            messages.error(request, 'Por favor seleccione la categoría, el área de evaluación y el correo del jurado.')
+            return redirect(reverse('competencia:asignar_jurado', kwargs={'competencia_id': competencia_id}))
+
 
         # Realizar la búsqueda del usuario en la base de datos
         try:
