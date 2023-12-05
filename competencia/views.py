@@ -2,7 +2,7 @@ import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import View
 from .models import Competencia, Categoria, AreaEvaluacion, Regla, asignacion_jurado, Robot, inscripcion_competencia
-from .models import EquipoLogistica, Participacion_Equipo
+from .models import EquipoLogistica, Participacion_Equipo, Tarea_EquipoLogistica
 from django.urls import reverse
 from django.db.models import Sum
 import datetime
@@ -938,7 +938,7 @@ class asignar_equipo_logistica(View):
         equipo_seleccionado = request.POST.get('equipo_seleccionado')
         busqueda = request.POST.get('busqueda')
 
-        if equipo_seleccionado == "Seleccionar..." or not equipo_seleccionado:
+        if equipo_seleccionado == "Seleccionar..." or not busqueda:
             messages.error(request, 'Por favor seleccione un equipo y ingrese un correo.')
             return redirect(reverse('competencia:asignar_equpo_logistica', kwargs={'competencia_id': competencia_id}))
             
@@ -965,3 +965,121 @@ class asignar_equipo_logistica(View):
 
         # Devuelve la página, incluyendo los datos y mensajes actualizados
         return redirect(reverse('competencia:asignar_equpo_logistica', kwargs={'competencia_id': competencia_id}))
+
+
+class TablaResultadosView(View):
+    def get(self, request, *args, **kwargs):
+        competencia_id = self.kwargs.get('competencia_id')
+        categoria_id = self.kwargs.get('categoria_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+
+        inscripciones = inscripcion_competencia.objects.filter(categoria=categoria, Estado_inscripcion="Inscrito").order_by('-resultado_total')
+        
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        if not usuario_id:
+            if inscripciones:
+                context = {
+                    'usuario_id': usuario_id,
+                    'competencia': competencia,
+                    'inscripciones': inscripciones,
+                    'categoria': categoria,
+                }
+                return render(request, 'tabla_resultado.html', context)
+            else:
+                context = {
+                    'usuario_id': usuario_id,
+                }
+                return render(request, 'sin_resultados.html', context)
+        else:
+            usuario = Usuario.objects.get(id=usuario_id)
+            if inscripciones:
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia': competencia,
+                    'inscripciones': inscripciones,
+                    'categoria': categoria,
+                }
+                return render(request, 'tabla_resultado.html', context)
+            else:
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                }
+                return render(request, 'sin_resultados.html', context)
+
+
+class CrearTareas(View):
+    def get(self, request, *args, **kwargs):
+        # Verificar si la cookie está presente y obtener el ID del usuario
+        usuario_id = request.COOKIES.get('usuario_id')
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        equipos_logistica = EquipoLogistica.objects.filter(competencia=competencia)
+
+        equipos_con_tareas = EquipoLogistica.objects.filter(
+            TareasEquipoLogistica__isnull=False
+        ).distinct()
+
+        equipos_logistica_asignados = []
+
+        for equipo in equipos_con_tareas:
+            asignaciones = Participacion_Equipo.objects.filter(equipo_logistica=equipo)
+            integrantes_asignados = [asignacion.usuario for asignacion in asignaciones]
+
+            if integrantes_asignados:  # Si hay integrantes asignados, añadir a la lista
+                equipos_logistica_asignados.append({
+                    'equipo': equipo,
+                    'integrantes': integrantes_asignados,
+                })
+
+        if usuario_id:
+            usuario = Usuario.objects.get(id=usuario_id)
+            
+            if usuario.tipo_usuario.NombreTipoUsuario == "Administrador":
+                context = {
+                    'usuario_id': usuario_id,
+                    'usuario': usuario,
+                    'competencia': competencia,
+                    'equipos_logistica': equipos_logistica,
+                    'equipos_con_tareas': equipos_con_tareas,
+                    'equipos_logistica_asignados': equipos_logistica_asignados,
+                }
+                return render(request, 'CrearTareas.html', context)
+            else:
+                return redirect('acceso_no_autorizado')
+        else:
+            return redirect('login:prueba')
+    
+
+    def post(self, request, *args, **kwargs):
+
+        competencia_id = self.kwargs.get('competencia_id')
+
+        competencia = get_object_or_404(Competencia, id=competencia_id)
+
+        equipo_seleccionado = request.POST.get('equipo_seleccionado')
+        Titulo = request.POST.get('Titulo')
+        Descripcion = request.POST.get('Descripcion')
+
+        if equipo_seleccionado == "Seleccionar..." or not Titulo or not Descripcion:
+            messages.error(request, 'Por favor seleccione un equipo y ingrese todos los campos.')
+            return redirect(reverse('competencia:crear_tareas', kwargs={'competencia_id': competencia_id}))
+        
+        equipo = get_object_or_404(EquipoLogistica, id=equipo_seleccionado)
+
+        nueva_tarea = Tarea_EquipoLogistica(
+            NombreTarea = Titulo,
+            DescipcionTarea = Descripcion,
+            equipo_logistica = equipo,
+        )
+        nueva_tarea.save()
+
+        # Devuelve la página, incluyendo los datos y mensajes actualizados
+        return redirect(reverse('competencia:crear_tareas', kwargs={'competencia_id': competencia_id}))

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'login',
     'competencia',
     'jurado',
+    'logistica',
 ]
 
 MIDDLEWARE = [
