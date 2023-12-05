@@ -1,0 +1,21 @@
+{% extends 'base2.html' %}
+
+{% block title %}
+Acceso no autorizado | Concurso de robótica
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card text-center shadow">
+        <div class="card-body">
+            <h5 class="card-title">¡Vista Restringida!</h5>
+            <p class="card-text">
+                Lo sentimos, no tiene permisos para ingresar a este módulo. Si cree que esto es un error, comuníquese con el administrador de la plataforma.<br>
+            </p>
+            <a href="/" class="btn btn-primary">Ir a la página principal</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
